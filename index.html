@@ -37,6 +37,15 @@ pre{margin:0;font-family:var(--mono)}
 .scan{position:fixed;inset:0;pointer-events:none;z-index:89;opacity:.45;
   background:repeating-linear-gradient(to bottom,rgba(255,255,255,.024) 0 1px,transparent 1px 3px)}
 
+/* the live background: a field of characters that fade in and out behind the
+   page, plus a refresh band sweeping down it. z-index:-1 paints above the
+   root background but below every in-flow element, so nothing is covered. */
+#dust{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
+.roll{position:fixed;left:0;right:0;height:42vh;z-index:88;pointer-events:none;
+  background:linear-gradient(to bottom,transparent,rgba(255,255,255,.020),transparent);
+  animation:roll 13s linear infinite;will-change:transform}
+@keyframes roll{from{transform:translateY(-44vh)} to{transform:translateY(142vh)}}
+
 /* one column, and nothing else holding the page up */
 .wrap{max-width:840px;margin:0 auto;padding-left:32px;padding-right:32px}
 
@@ -164,7 +173,7 @@ ul.l li::before{content:"—";position:absolute;left:0;color:var(--low)}
 .rv.vis{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
   .rv{opacity:1;transform:none;transition:none} .crt{animation:none;opacity:0}
-  #art{text-shadow:none}
+  #art{text-shadow:none} .roll{animation:none;opacity:0} #dust{display:none}
 }
 @media(max-width:640px){
   .wrap{padding-left:20px;padding-right:20px}
@@ -181,6 +190,8 @@ ul.l li::before{content:"—";position:absolute;left:0;color:var(--low)}
 </style>
 </head>
 <body>
+<canvas id="dust" aria-hidden="true"></canvas>
+<div class="roll" aria-hidden="true"></div>
 <div class="crt" aria-hidden="true"></div>
 <div class="scan" aria-hidden="true"></div>
 
@@ -617,6 +628,78 @@ const $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 const usd = n => (n == null || !isFinite(n)) ? '—'
   : '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+/* ── the live background ───────────────────────────────────────────────
+   Characters are born at random cells, fade up and back down over a few
+   seconds, and die. Nothing jumps, so it reads as a signal rather than as
+   static. Redrawn at ~8fps, paused when the tab is hidden, and skipped
+   entirely under prefers-reduced-motion.                                  */
+(function(){
+  const cv = document.getElementById('dust');
+  if (!cv || !cv.getContext) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const g = cv.getContext('2d');
+  const CHARS = ".'`:;-=+o0#";
+  const CELL = 15, ADV = CELL * 0.62;
+  let cols = 0, rows = 0, cells = [], timer = null, tear = 0;
+
+  function size(){
+    cv.width = innerWidth; cv.height = innerHeight;
+    cols = Math.ceil(innerWidth / ADV) + 1;
+    rows = Math.ceil(innerHeight / CELL) + 1;
+    cells = new Array(cols * rows).fill(null);
+    g.font = CELL + 'px "IBM Plex Mono", ui-monospace, monospace';
+    g.textBaseline = 'top';
+  }
+
+  function born(){
+    return {
+      c: CHARS[(Math.random() * CHARS.length) | 0],
+      life: 34 + Math.random() * 120,
+      age: 0,
+      max: 0.045 + Math.random() * 0.15,
+    };
+  }
+
+  function tick(){
+    g.clearRect(0, 0, cv.width, cv.height);
+
+    const births = Math.max(2, Math.round(cols * rows / 1600));
+    for (let i = 0; i < births; i++){
+      const k = (Math.random() * cells.length) | 0;
+      if (!cells[k]) cells[k] = born();
+    }
+
+    // every so often a row tears brighter for a couple of frames
+    if (tear > 0) tear--;
+    else if (Math.random() < 0.012) tear = 2 + ((Math.random() * 3) | 0);
+    const tearRow = tear > 0 ? (Math.random() * rows) | 0 : -1;
+
+    for (let k = 0; k < cells.length; k++){
+      const d = cells[k];
+      if (!d) continue;
+      if (++d.age >= d.life){ cells[k] = null; continue; }
+      const row = (k / cols) | 0;
+      let a = d.max * Math.sin(Math.PI * (d.age / d.life));
+      if (row === tearRow) a = Math.min(0.42, a * 5);
+      if (a < 0.004) continue;
+      g.fillStyle = 'rgba(255,255,255,' + a.toFixed(3) + ')';
+      g.fillText(d.c, (k % cols) * ADV, row * CELL);
+    }
+  }
+
+  const start = () => { if (!timer) timer = setInterval(tick, 120); };
+  const stop = () => { clearInterval(timer); timer = null; };
+
+  size(); tick(); start();
+
+  let rt = null;
+  addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => { size(); tick(); }, 180);
+  });
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+})();
 
 /* ── the wordmark, computed into characters in your browser ────────────
    The brand claim is that the mark is computed rather than drawn, so the
