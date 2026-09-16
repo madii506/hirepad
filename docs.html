@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HIRE — docs</title>
+<meta name="description" content="How a HIRE job is committed, bonded, delivered and settled, written down in full: the canonical hash, the capacity ceiling, the state machine, every reader, and what is not verifiable yet.">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-64.png" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<meta property="og:title" content="HIRE — docs">
+<meta property="og:description" content="The whole mechanic, written down so it cannot be changed quietly.">
+<meta property="og:image" content="assets/pfp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000; --panel:#07070a; --hair:rgba(255,255,255,.11); --hair2:rgba(255,255,255,.055);
+  --white:#f2f3f5; --grey:#8b909c; --dim:#585d67;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{overflow-x:hidden;scroll-behavior:smooth}
+body{overflow-x:clip;margin:0;background:var(--bg);color:var(--white);
+  font-family:var(--mono);font-size:14.5px;line-height:1.72;-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+a{color:inherit}
+pre{margin:0;font-family:var(--mono)}
+.w{color:var(--white)} .d{color:var(--dim)}
+
+.crt{position:fixed;inset:0;pointer-events:none;z-index:70;background:#000;
+  animation:crt 6.4s ease-in-out infinite}
+@keyframes crt{
+  0%{opacity:.010} 11%{opacity:.062} 23%{opacity:.016} 38%{opacity:.080}
+  49%{opacity:.020} 63%{opacity:.052} 77%{opacity:.012} 88%{opacity:.044} 100%{opacity:.010}
+}
+.scan{position:fixed;inset:0;pointer-events:none;z-index:69;opacity:.55;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.028) 0 1px,transparent 1px 3px)}
+
+nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;
+  padding:13px 20px;border-bottom:1px solid var(--hair);position:sticky;top:0;z-index:40;
+  background:rgba(0,0,0,.9);backdrop-filter:blur(9px)}
+nav .sp{min-width:0}
+nav .links{display:flex;justify-content:center;align-items:center;flex-wrap:wrap}
+nav a{font-size:12.5px;color:var(--dim);text-decoration:none;padding:3px 9px;transition:.15s}
+nav a:hover{color:var(--white)} nav a.on{color:var(--white)}
+nav a+a{border-left:1px solid var(--hair2)}
+#mb{display:none;background:none;border:1px solid var(--hair);color:var(--white);
+  padding:6px 10px;font-size:12px;cursor:pointer;font-family:var(--mono)}
+
+.btn{display:inline-block;padding:9px 16px;font-size:13px;font-family:var(--mono);
+  text-decoration:none;cursor:pointer;border:1px solid var(--hair);background:transparent;
+  color:var(--white);transition:.15s}
+.btn:hover{border-color:var(--white)}
+.btn.solid{background:var(--white);color:#000;border-color:var(--white);font-weight:600}
+.btn.sm{padding:5px 11px;font-size:11.5px}
+
+.mast{border-bottom:1px solid var(--hair);padding:40px 24px 30px}
+.mast .in{max-width:1320px;margin:0 auto}
+.crumb{font-size:11px;letter-spacing:.15em;color:var(--dim);text-transform:uppercase;margin:0 0 14px}
+.crumb a{text-decoration:none;color:var(--dim)} .crumb a:hover{color:var(--white)}
+.mast h1{font-size:clamp(23px,3.4vw,33px);margin:0 0 10px;font-weight:600;letter-spacing:-.02em}
+.mast h1 em{font-style:italic;color:var(--grey);font-weight:400}
+.mast p{color:var(--grey);max-width:74ch;margin:0;font-size:13.5px}
+.meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:20px;font-size:10.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.meta b{display:block;margin-top:5px;color:var(--white);font-weight:500;
+  letter-spacing:0;text-transform:none;font-size:12.5px}
+
+.doc{max-width:1320px;margin:0 auto;display:grid;
+  grid-template-columns:238px minmax(0,1fr) 198px;align-items:start}
+.side{position:sticky;top:56px;max-height:calc(100vh - 56px);overflow-y:auto;
+  border-right:1px solid var(--hair);padding:28px 18px 60px}
+.side::-webkit-scrollbar{width:5px}
+.side::-webkit-scrollbar-thumb{background:var(--hair)}
+.side .ph{font-size:9.5px;letter-spacing:.17em;color:var(--dim);text-transform:uppercase;
+  margin:22px 0 9px;padding-left:9px}
+.side .ph:first-child{margin-top:0}
+.side a{display:block;text-decoration:none;color:var(--grey);font-size:12.5px;
+  padding:5px 9px;border-left:1px solid var(--hair2);transition:.15s}
+.side a:hover{color:var(--white);border-left-color:var(--dim)}
+.side a.on{color:var(--white);border-left-color:var(--white);background:rgba(255,255,255,.045)}
+
+.art{padding:30px 34px 90px;min-width:0}
+.toc{position:sticky;top:56px;padding:30px 18px 60px;border-left:1px solid var(--hair)}
+.toc .ph{font-size:9.5px;letter-spacing:.17em;color:var(--dim);text-transform:uppercase;margin:0 0 11px}
+.toc a{display:block;text-decoration:none;color:var(--dim);font-size:11.5px;
+  padding:4px 0;line-height:1.45;transition:.15s}
+.toc a:hover{color:var(--white)} .toc a.on{color:var(--white)}
+.toc a.sub{padding-left:11px;font-size:11px}
+
+.sec{padding:0 0 46px;scroll-margin-top:72px}
+.sec+.sec{border-top:1px solid var(--hair2);padding-top:40px}
+.eyebrow{color:var(--dim);font-size:11.5px;letter-spacing:.12em;margin:0 0 14px;
+  display:flex;align-items:center;gap:10px}
+.eyebrow b{color:var(--white);font-weight:600}
+.eyebrow i{flex:1;height:1px;background:var(--hair2);display:block}
+.art h2{font-size:clamp(18px,2.4vw,23px);font-weight:600;margin:0 0 12px;letter-spacing:-.01em}
+.art h2 em{font-style:italic;color:var(--grey);font-weight:400}
+.art h3{font-size:14.5px;font-weight:600;margin:28px 0 8px;scroll-margin-top:72px}
+.art h3::before{content:"# ";color:var(--dim)}
+.art p{color:var(--grey);max-width:78ch;margin:0 0 14px;font-size:13.5px}
+.art p b,.art li b,dd b{color:var(--white);font-weight:600}
+code{background:#08090c;border:1px solid var(--hair2);padding:1px 5px;
+  font-size:12.5px;color:var(--white)}
+a.lnk{color:var(--white);text-underline-offset:3px}
+
+.box{border:1px solid var(--hair);background:var(--panel);padding:18px;margin:16px 0}
+.box.p0{padding:0}
+.bt{color:var(--dim);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  margin:0 0 14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.note{border-left:2px solid var(--white);background:rgba(255,255,255,.035);
+  padding:14px 16px;margin:16px 0}
+.note p{margin:0;font-size:13px;color:var(--grey);max-width:none}
+.note .nt{color:var(--white);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  display:block;margin-bottom:6px}
+
+ul.list{margin:0 0 14px;padding:0;list-style:none}
+ul.list li{color:var(--grey);font-size:13px;padding:8px 0 8px 17px;position:relative;
+  border-bottom:1px solid var(--hair2)}
+ul.list li:last-child{border-bottom:0}
+ul.list li::before{content:"·";position:absolute;left:3px;color:var(--white)}
+
+table.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+table.tbl th{text-align:left;color:var(--dim);font-weight:500;font-size:10px;
+  letter-spacing:.13em;text-transform:uppercase;padding:11px 14px;border-bottom:1px solid var(--hair)}
+table.tbl td{padding:10px 14px;border-bottom:1px solid var(--hair2);color:var(--grey);vertical-align:top}
+table.tbl tr:last-child td{border-bottom:0}
+table.tbl td b{color:var(--white);font-weight:600}
+table.tbl td.nowrap{white-space:nowrap}
+
+.rows{border-top:1px solid var(--hair2)}
+.rows .r{display:grid;grid-template-columns:70px 1fr;gap:14px;padding:14px 0;
+  border-bottom:1px solid var(--hair2);align-items:start}
+.rows .r:last-child{border-bottom:0}
+.rows .n{color:var(--white);font-size:12px}
+.rows h4{margin:0 0 4px;font-size:14px;font-weight:600}
+.rows p{margin:0;color:var(--grey);font-size:13px;max-width:none}
+
+.code{background:#030304;border:1px solid var(--hair2);padding:15px 16px;overflow-x:auto;
+  font-size:12.5px;line-height:1.72;color:var(--grey);margin:14px 0;white-space:pre}
+.code .k{color:var(--white)} .code .c{color:var(--dim)}
+
+.ep{border:1px solid var(--hair);background:var(--panel);margin:16px 0}
+.ep .hd{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  flex-wrap:wrap;padding:13px 16px;border-bottom:1px solid var(--hair)}
+.ep .path{font-size:13.5px;font-weight:600}
+.ep .path .verb{color:var(--dim);margin-right:8px;font-size:11px;letter-spacing:.1em}
+.ep .bd{padding:15px 16px}
+.ep p{margin:0 0 12px;font-size:13px}
+.ep p:last-child{margin-bottom:0}
+.ep .res{margin-top:13px;border-top:1px solid var(--hair2);padding-top:13px;font-size:12px;
+  white-space:pre-wrap;word-break:break-word;color:var(--grey);max-height:300px;overflow:auto}
+.ep .res b{color:var(--white)}
+
+.pill{display:inline-block;white-space:nowrap;font-size:10px;letter-spacing:.11em;
+  text-transform:uppercase;padding:2px 8px;border:1px solid var(--hair);color:var(--dim)}
+.pill.live{color:#000;background:var(--white);border-color:var(--white);font-weight:600}
+.pill.no::before{content:"! ";color:var(--white)}
+
+dl.gloss{margin:0;border-top:1px solid var(--hair2)}
+dl.gloss dt{color:var(--white);font-weight:600;font-size:13.5px;padding:14px 0 3px}
+dl.gloss dd{margin:0 0 14px;color:var(--grey);font-size:13px;
+  border-bottom:1px solid var(--hair2);padding-bottom:14px;max-width:78ch}
+dl.gloss dd:last-child{border-bottom:0}
+
+.foot{border-top:1px solid var(--hair);padding:26px 24px 60px;text-align:center}
+.foot p{color:var(--dim);font-size:12px;margin:0 0 14px}
+
+.rv{opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease}
+.rv.vis{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;transition:none} .crt{animation:none;opacity:0}
+}
+@media(max-width:1180px){ .doc{grid-template-columns:220px minmax(0,1fr)} .toc{display:none} }
+@media(max-width:860px){
+  .doc{grid-template-columns:1fr}
+  .side{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--hair);
+    padding:18px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:2px 14px}
+  .side .ph{grid-column:1/-1;margin:12px 0 4px} .side .ph:first-child{margin-top:0}
+  .art{padding:26px 16px 70px} .mast{padding:30px 16px 24px}
+  table.tbl{font-size:11.5px} table.tbl th,table.tbl td{padding:9px 8px}
+}
+@media(max-width:700px){
+  nav{grid-template-columns:1fr auto}
+  nav .sp:first-child{display:none}
+  nav .links{display:none;grid-column:1/-1;flex-direction:column;align-items:center;padding-top:10px}
+  nav .links.open{display:flex}
+  nav a+a{border-left:0}
+  #mb{display:block}
+}
+</style>
+</head>
+<body>
+<div class="crt" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+
+<nav>
+  <div class="sp"></div>
+  <div class="links" id="menu">
+    <a href="index.html">home</a>
+    <a href="index.html#bond">bond</a>
+    <a href="index.html#ceiling">ceiling</a>
+    <a href="index.html#ledger">ledger</a>
+    <a href="index.html#faq">faq</a>
+    <a href="docs.html" class="on">docs</a>
+  </div>
+  <div class="sp" style="text-align:right"><button id="mb" aria-label="Menu">menu</button></div>
+</nav>
+
+<header class="mast">
+  <div class="in">
+    <p class="crumb"><a href="index.html">HIRE</a> &nbsp;/&nbsp; documentation</p>
+    <h1>The job, <em>written down.</em></h1>
+    <p>Everything the mechanic does, in the order it does it: how a job becomes a hash, why the
+      bond equals the price, what the wallet ceiling actually constrains, how a deadline settles,
+      and every reader this site runs on. Written down so it cannot be changed quietly.</p>
+    <div class="meta">
+      <span>Version<b>0.1 — pre-launch</b></span>
+      <span>Chain<b>Solana · pump.fun</b></span>
+      <span>Rail<b>X Money</b></span>
+      <span>Commitment<b>sha256(utf8)</b></span>
+      <span>Status<b>no mint yet</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="doc">
+  <aside class="side">
+    <p class="ph">Start</p>
+    <a href="#overview">Overview</a>
+    <a href="#rule">The rule</a>
+    <a href="#vocab">Vocabulary</a>
+
+    <p class="ph">Mechanics</p>
+    <a href="#commit">The commitment</a>
+    <a href="#bondsize">Why bond = price</a>
+    <a href="#ceiling">The ceiling</a>
+    <a href="#settle">Settlement</a>
+    <a href="#edge">Edge cases</a>
+
+    <p class="ph">Program</p>
+    <a href="#accounts">Accounts</a>
+    <a href="#instructions">Instructions</a>
+    <a href="#states">State machine</a>
+
+    <p class="ph">Readers</p>
+    <a href="#readers">Overview</a>
+    <a href="#ep-bond">/api/bond</a>
+    <a href="#ep-tweet">/api/tweet</a>
+    <a href="#ep-handle">/api/handle</a>
+    <a href="#ep-coin">/api/coin</a>
+    <a href="#errors">Errors</a>
+
+    <p class="ph">Honesty</p>
+    <a href="#operator">The operator</a>
+    <a href="#live">What is live</a>
+    <a href="#notchain">Not on chain yet</a>
+    <a href="#scam">Scams</a>
+    <a href="#changelog">Changelog</a>
+  </aside>
+
+  <main class="art">
+
+    <section class="sec rv" id="overview">
+      <p class="eyebrow"><b>01</b> overview <i></i></p>
+      <h2>What this <em>actually is</em></h2>
+      <p>HIRE is an agent you can pay to do work. That part is not new. What is new is that it
+        cannot start a job without staking its own money against finishing it.</p>
+      <p>Before any work begins, the agent opens a <b>bond</b> onchain: a hash of the exact job
+        terms, the price you paid, an equal amount out of its own wallet, and a deadline. Deliver
+        and the bond returns and it keeps the fee. Miss the deadline and the bond is yours, along
+        with your fee back.</p>
+      <p>Nobody grades the work. The bond settles on whether proof was filed before the deadline,
+        which is a fact rather than an opinion — and opinions are what agents argue their way out
+        of.</p>
+      <div class="note">
+        <span class="nt">The short version</span>
+        <p>It works. It bonds every job. If it fails, it pays you. Its balance is its track
+          record, and its track record is its capacity.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="rule">
+      <p class="eyebrow"><b>02</b> the rule <i></i></p>
+      <h2>Four steps, <em>in this order</em></h2>
+      <p>The ordering is the security property. Every commitment is made before the thing it
+        constrains happens.</p>
+      <div class="box p0">
+        <div class="rows" style="border-top:0">
+          <div class="r"><div class="n">01</div><div><h4>The job is hashed</h4>
+            <p>Terms, price, bond and deadline are folded into one canonical string and hashed. The
+              hash <em>is</em> the job. A one-character edit is a different job with a different
+              hash.</p></div></div>
+          <div class="r"><div class="n">02</div><div><h4>The bond opens</h4>
+            <p>The agent stakes an amount equal to your price, from its own wallet, against that
+              hash. It cannot begin without this, and it cannot open a bond it cannot cover.</p></div></div>
+          <div class="r"><div class="n">03</div><div><h4>Proof is filed</h4>
+            <p>In the same public thread the job was agreed in. Filing proof does not settle
+              anything by itself — it only attaches the post id to the bond.</p></div></div>
+          <div class="r"><div class="n">04</div><div><h4>The deadline settles</h4>
+            <p>Proof before the deadline settles delivered. No proof settles failed, and anyone can
+              force that settlement once the deadline passes.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="vocab">
+      <p class="eyebrow"><b>03</b> vocabulary <i></i></p>
+      <h2>Words this site uses <em>in a specific way</em></h2>
+      <p>Where a word below appears anywhere on this site, it means exactly this and nothing
+        looser.</p>
+      <dl class="gloss">
+        <dt>The bond</dt>
+        <dd>Money the agent stakes from its own wallet against finishing a job. Not a fee, not a
+          deposit you pay, and not held by a third party. It is the agent's money at risk.</dd>
+        <dt>The job hash</dt>
+        <dd><code>sha256</code> of the canonical string described in
+          <a class="lnk" href="#commit">the commitment</a>. It is the job's identity. There is no
+          other name for a job.</dd>
+        <dt>Proof</dt>
+        <dd>A public post filed against the bond before the deadline. Proof means <b>something was
+          filed</b>, not that it was any good — see <a class="lnk" href="#settle">settlement</a>
+          for why that distinction is deliberate.</dd>
+        <dt>The deadline</dt>
+        <dd>A slot, fixed when the bond opens. It never moves. There is no extension mechanism,
+          because an extension mechanism is a way to never fail.</dd>
+        <dt>The ceiling</dt>
+        <dd>The largest job the agent can accept, which equals its wallet balance. Not a policy —
+          arithmetic, because the bond must be covered.</dd>
+        <dt>Forfeited</dt>
+        <dd>A bond that went to the client because the deadline passed without proof. Forfeits are
+          permanent rows in the ledger and are never removed from the failed count.</dd>
+        <dt>A dash</dt>
+        <dd>Not zero. A dash means the site has no number, usually because nothing has happened
+          yet. A zero would claim we looked and found nothing.</dd>
+      </dl>
+    </section>
+
+    <section class="sec rv" id="commit">
+      <p class="eyebrow"><b>04</b> the commitment <i></i></p>
+      <h2>How a job becomes <em>a hash</em></h2>
+      <p>The canonical string is byte-exact and is the only thing that is ever hashed. It is
+        printed in full on the front page as you type, so you never have to trust a description of
+        it.</p>
+      <div class="code"><span class="c"># the canonical form, exactly — five lines, LF separated, no trailing newline</span>
+HIRE/v1
+job=&lt;job text, whitespace collapsed to single spaces, trimmed, max 2000 chars&gt;
+price=&lt;integer cents&gt;
+bond=&lt;integer cents&gt;
+deadline=&lt;integer hours&gt;h
+
+<span class="c"># the commitment</span>
+job_hash = sha256(utf8(canonical))</div>
+      <p>Three things about this are load-bearing. Whitespace is collapsed <b>before</b> hashing,
+        so a stray double space or a pasted line break cannot produce a different hash for what is
+        obviously the same job. Money is in <b>integer cents</b>, so no float ever touches a
+        commitment. And the version prefix means a future format change cannot silently
+        reinterpret an old hash.</p>
+      <h3 id="commit-verify">Verifying it yourself</h3>
+      <p>The front page hashes the string in your browser with Web Crypto, and independently on the
+        server with Node's crypto, then shows both side by side. You can add a third:</p>
+      <div class="code"><span class="c"># any shell, against the exact string the page prints</span>
+printf 'HIRE/v1\njob=%s\nprice=%s\nbond=%s\ndeadline=%sh' \
+  "read the replies and summarise them" 4000 4000 24 | sha256sum</div>
+      <p>If those three ever disagree, one implementation is wrong and you can see which. That is
+        the entire reason two of them are printed rather than one.</p>
+    </section>
+
+    <section class="sec rv" id="bondsize">
+      <p class="eyebrow"><b>05</b> why bond = price <i></i></p>
+      <h2>Failing costs it <em>exactly what delivering pays</em></h2>
+      <p>The bond is set equal to the price, and that single choice does most of the work.</p>
+      <div class="box p0">
+        <table class="tbl">
+          <thead><tr><th>outcome</th><th>the agent</th><th>you</th></tr></thead>
+          <tbody>
+            <tr><td><b>delivered</b></td><td>+ the fee. Bond returns.</td><td>you paid the fee and got the work.</td></tr>
+            <tr><td><b>failed</b></td><td>− the bond. Fee refunded to you.</td><td>your fee back, plus the bond on top.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>So the swing between delivering and failing is <b>twice the price</b>, and it is
+        symmetric: the agent's downside is exactly your upside. A smaller bond would make failure
+        cheap; a larger one would make the agent refuse work it could easily do. Equal is the
+        point where taking a job it cannot finish is never rational.</p>
+      <div class="note">
+        <span class="nt">What this is not</span>
+        <p>It is not insurance and it is not an escrow service. Nobody holds your money for you.
+          The only money at risk beyond your fee is the agent's own.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="ceiling">
+      <p class="eyebrow"><b>06</b> the ceiling <i></i></p>
+      <h2>Its wallet is <em>a limit, not a treasury</em></h2>
+      <p>Because the bond must be covered, the largest job the agent can accept equals its balance:</p>
+      <div class="code">ceiling      = wallet_balance
+can_accept   = price &gt; 0 and price &lt;= ceiling
+after_win    = balance + price
+after_loss   = balance − price
+ruin_at_p    = floor(balance / p)     <span class="c"># consecutive failures at price p</span></div>
+      <p>Two consequences worth stating plainly. The agent <b>refuses jobs out loud</b> rather than
+        taking money it could not cover — an uncovered bond is a promise, and promises are what
+        this is designed to replace. And a failing agent shrinks: every forfeit lowers what it can
+        be hired for next, so it prices itself out of the market without anyone having to
+        intervene.</p>
+      <p>The wallet is funded by the creator fee on $HIRE. That means trading volume does exactly
+        one thing here — it raises the ceiling on what the agent can be hired for. It does not buy
+        reputation, and it does not settle a single job.</p>
+    </section>
+
+    <section class="sec rv" id="settle">
+      <p class="eyebrow"><b>07</b> settlement <i></i></p>
+      <h2>Decided by a deadline, <em>never by an opinion</em></h2>
+      <p>This is the part people push back on hardest, so it is worth being direct: <b>nobody
+        judges the work.</b></p>
+      <p>A quality standard sounds better and is worse. Whoever holds it can be argued with,
+        lobbied, or simply outlasted, and the agent is the party with the most time and the most
+        motivation to do all three. A deadline cannot be negotiated with. So the bond settles on a
+        fact — was proof filed before the slot — and everything else is left to the public record.</p>
+      <div class="code"><span class="c">// at or after the deadline slot</span>
+<span class="k">if</span> (bond.proof_post_id != <span class="k">null</span> &amp;&amp; bond.proof_slot &lt;= bond.deadline_slot) {
+  settle_delivered();   <span class="c">// bond returns to the wallet, fee kept</span>
+} <span class="k">else</span> {
+  settle_failed();      <span class="c">// bond + fee to the client</span>
+}
+<span class="c">// anyone may call expire() past the deadline to force the second branch.
+// the agent cannot sit on a bond to avoid settling it.</span></div>
+      <h3 id="settle-junk">Then what stops junk proof?</h3>
+      <p>Nothing stops it being filed. What stops it working is that the job hash, the proof post
+        and the settlement are all public and permanent. Junk proof is junk in front of the next
+        person deciding whether to hire it, and the ledger is the only reputation the agent has.
+        It cannot edit that ledger, and it cannot delete a row.</p>
+      <p>This is a real limitation, not a solved problem. It is written here rather than buried
+        because an agent that claims to have solved subjective quality assessment is lying.</p>
+    </section>
+
+    <section class="sec rv" id="edge">
+      <p class="eyebrow"><b>08</b> edge cases <i></i></p>
+      <h2>When it <em>goes wrong</em></h2>
+      <p>Each of these has an answer decided in advance, rather than after somebody loses money.</p>
+      <div class="box p0">
+        <table class="tbl">
+          <thead><tr><th style="width:38%">If</th><th>then</th></tr></thead>
+          <tbody>
+            <tr><td><b>The agent vanishes after taking the job</b></td>
+              <td>The deadline passes with no proof and <b>anyone</b> can call <code>expire()</code>
+                to force the failed settlement. It does not require the agent's co-operation.</td></tr>
+            <tr><td><b>The proof post is deleted before the deadline</b></td>
+              <td>The post id no longer resolves, so it does not count as filed and the bond fails.
+                Proof has to exist at settlement, not merely have existed.</td></tr>
+            <tr><td><b>The proof post is deleted after settlement</b></td>
+              <td>Nothing reverses. The ledger row keeps the dead link, marked deleted.</td></tr>
+            <tr><td><b>You change your mind about the terms</b></td>
+              <td>That is a different hash, so it is a different job. The open bond runs to its own
+                deadline on the original terms.</td></tr>
+            <tr><td><b>The job is impossible</b></td>
+              <td>The agent should refuse it before bonding. If it bonds anyway, it fails and pays —
+                that cost is the mechanism working, not breaking.</td></tr>
+            <tr><td><b>You are unhappy but proof was filed on time</b></td>
+              <td>The bond settles delivered. You are not made whole, and the public record of what
+                was filed is what you have. Stated so nobody is surprised by it later.</td></tr>
+            <tr><td><b>The agent's wallet is empty</b></td>
+              <td>The ceiling is zero, so it can accept nothing. It goes quiet rather than working
+                unbonded.</td></tr>
+            <tr><td><b>X is unreachable at the deadline</b></td>
+              <td>Settlement retries for up to fifteen minutes, then settles on what the chain
+                knows. A proof that could not be read was not filed.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sec rv" id="accounts">
+      <p class="eyebrow"><b>09</b> accounts <i></i></p>
+      <h2>Four account types, <em>and no more</em></h2>
+      <p>The program's job is not to run the agent. It is to hold the commitments that make the
+        agent's behaviour checkable from outside.</p>
+      <div class="box p0">
+        <table class="tbl">
+          <thead><tr><th>account</th><th>fields</th><th>written when</th></tr></thead>
+          <tbody>
+            <tr><td><b>Bond</b></td><td>job_hash, price_cents, bond_cents, deadline_slot, proof_post_id, state</td><td>before work starts, then once at settlement</td></tr>
+            <tr><td><b>Wallet</b></td><td>balance_cents, lifetime_earned, lifetime_forfeited</td><td>every settlement</td></tr>
+            <tr><td><b>Client</b></td><td>handle_hash, jobs_hired, paid_cents, forfeits_received</td><td>first job, then each settlement</td></tr>
+            <tr><td><b>Mark</b></td><td>delivered, failed, ceiling_cents</td><td>every settlement</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="box p0">
+        <div class="bt" style="padding:13px 14px 0;margin:0"><span>BOND — BYTE LAYOUT</span><span>the site decodes live accounts at exactly these offsets</span></div>
+        <table class="tbl">
+          <thead><tr><th>offset</th><th>bytes</th><th>field</th><th>type</th></tr></thead>
+          <tbody>
+            <tr><td class="nowrap">0</td><td>8</td><td><b>discriminator</b></td><td>[u8; 8]</td></tr>
+            <tr><td class="nowrap">8</td><td>32</td><td><b>agent</b></td><td>Pubkey</td></tr>
+            <tr><td class="nowrap">40</td><td>32</td><td><b>job_hash</b></td><td>[u8; 32]</td></tr>
+            <tr><td class="nowrap">72</td><td>8</td><td><b>price_cents</b></td><td>u64</td></tr>
+            <tr><td class="nowrap">80</td><td>8</td><td><b>bond_cents</b></td><td>u64</td></tr>
+            <tr><td class="nowrap">88</td><td>8</td><td><b>deadline_slot</b></td><td>u64</td></tr>
+            <tr><td class="nowrap">96</td><td>8</td><td><b>proof_post_id</b></td><td>u64 — 0 until filed</td></tr>
+            <tr><td class="nowrap">104</td><td>1</td><td><b>state</b></td><td>u8 — 0 open, 1 delivered, 2 failed</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sec rv" id="instructions">
+      <p class="eyebrow"><b>10</b> instructions <i></i></p>
+      <h2>Six instructions, <em>one of them public</em></h2>
+      <div class="box p0">
+        <table class="tbl">
+          <thead><tr><th>instruction</th><th>signer</th><th>effect</th></tr></thead>
+          <tbody>
+            <tr><td><b>initialize</b></td><td>agent</td><td>Creates Wallet and Mark. Callable once.</td></tr>
+            <tr><td><b>open_bond</b></td><td>agent</td><td>Locks job_hash, price, bond and deadline. Fails if bond &gt; balance. State → open.</td></tr>
+            <tr><td><b>file_proof</b></td><td>agent</td><td>Attaches proof_post_id. Settles nothing.</td></tr>
+            <tr><td><b>settle_delivered</b></td><td>agent</td><td>Bond returns, fee kept. State → delivered.</td></tr>
+            <tr><td><b>settle_failed</b></td><td>agent</td><td>Bond and fee to the client. State → failed.</td></tr>
+            <tr><td><b>expire</b></td><td><b>anyone</b></td><td>Past deadline with no valid proof, forces settle_failed. This is the one instruction the agent does not control.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The agent key signs everything except <code>expire</code>. There is <b>no admin key</b>,
+        and no upgrade authority after the first month. The human operator who taps send in X Money
+        holds no key to this program at all.</p>
+    </section>
+
+    <section class="sec rv" id="states">
+      <p class="eyebrow"><b>11</b> state machine <i></i></p>
+      <h2>A bond leaves open <em>exactly once</em></h2>
+      <div class="code">                 file_proof
+        ┌──────────────────────────┐
+        │                          ▼
+     ┌──────┐                 ┌────────────────┐
+     │ OPEN │                 │ OPEN + PROOF   │
+     └──┬───┘                 └───────┬────────┘
+        │                             │
+        │ deadline passes,            │ settle_delivered
+        │ no valid proof              ▼
+        │                     ┌───────────────┐
+        │                     │   DELIVERED   │  bond returns, fee kept
+        │                     └───────────────┘
+        ▼
+  ┌────────────┐
+  │   FAILED   │  bond + fee to the client
+  └────────────┘
+
+<span class="c">DELIVERED and FAILED are terminal. Nothing returns to OPEN.
+expire() is callable by anyone once deadline_slot has passed.</span></div>
+      <p>There is no cancel. A bond that has been opened is money at risk until one of the two
+        terminal states is reached, which is what stops the agent withdrawing from a job it is
+        losing.</p>
+    </section>
+
+    <section class="sec rv" id="readers">
+      <p class="eyebrow"><b>12</b> readers <i></i></p>
+      <h2>Every endpoint <em>this site runs on</em></h2>
+      <p>Five readers, no database, nothing that writes. Each is documented below with a button
+        that calls it live from your browser, so you can see what it returns rather than what this
+        page claims it returns.</p>
+      <div class="box p0">
+        <table class="tbl">
+          <thead><tr><th>endpoint</th><th>reads</th><th>source</th><th>state</th></tr></thead>
+          <tbody>
+            <tr><td><b>/api/bond</b></td><td>the commitment hash for job terms</td><td>computed here</td><td><span class="pill live">live</span></td></tr>
+            <tr><td><b>/api/tweet</b></td><td>a post, for proof and threads</td><td>FxTwitter, then syndication</td><td><span class="pill live">live</span></td></tr>
+            <tr><td><b>/api/handle</b></td><td>an account's name and followers</td><td>FxTwitter, then syndication</td><td><span class="pill live">live</span></td></tr>
+            <tr><td><b>/api/avatar</b></td><td>an account's picture</td><td>resolved, then proxied</td><td><span class="pill live">live</span></td></tr>
+            <tr><td><b>/api/coin</b></td><td>volume, and the fee that funds the wallet</td><td>Dexscreener, solana only</td><td><span class="pill no">no mint yet</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sec rv" id="ep-bond">
+      <p class="eyebrow"><b>13</b> reader <i></i></p>
+      <div class="ep">
+        <div class="hd">
+          <span class="path"><span class="verb">GET</span>/api/bond</span>
+          <button class="btn sm" data-try="/api/bond?job=read%20the%20replies%20and%20summarise%20them&amp;price=4000&amp;deadline=24">try it</button>
+        </div>
+        <div class="bd">
+          <p>Builds the canonical string and hashes it. This is the endpoint the front page checks
+            its own Web Crypto result against.</p>
+          <table class="tbl" style="margin:6px 0 10px">
+            <thead><tr><th style="width:110px">param</th><th>meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="nowrap"><code>job</code></td><td>the job text. Whitespace is collapsed and it is trimmed to 2000 characters before hashing.</td></tr>
+              <tr><td class="nowrap"><code>price</code></td><td>integer cents, 0 to 100,000,000. The bond is set equal to it.</td></tr>
+              <tr><td class="nowrap"><code>deadline</code></td><td>whole hours, clamped 1 to 720. Defaults to 24.</td></tr>
+            </tbody>
+          </table>
+          <p>Returns <code>canonical</code>, <code>canonicalBytes</code>, <code>hash</code>,
+            <code>price</code>, <code>bond</code>, <code>deadline</code> and <code>layout</code>,
+            the field-by-field byte map of the account the commitment would open.</p>
+          <div class="res" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="ep-tweet">
+      <p class="eyebrow"><b>14</b> reader <i></i></p>
+      <div class="ep">
+        <div class="hd">
+          <span class="path"><span class="verb">GET</span>/api/tweet</span>
+          <button class="btn sm" data-try="/api/tweet?id=1519480761749016577">try it</button>
+        </div>
+        <div class="bd">
+          <p>Reads one post. Used to resolve proof posts and the threads jobs are agreed in.</p>
+          <table class="tbl" style="margin:6px 0 10px">
+            <thead><tr><th style="width:110px">param</th><th>meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="nowrap"><code>id</code></td><td>a numeric post id</td></tr>
+              <tr><td class="nowrap"><code>url</code></td><td>a full x.com or twitter.com post URL; the id is parsed out. <code>id</code> wins if both are sent.</td></tr>
+            </tbody>
+          </table>
+          <p>Returns <code>text</code>, <code>created</code>, <code>handle</code>,
+            <code>views</code>, <code>likes</code>, <code>reposts</code>, <code>replies</code>,
+            <code>exists</code> and <code>src</code>. Only the FxTwitter source can carry
+            <code>views</code>, and not for every post — older posts come back
+            <code>views: null</code>. A null is never a zero.</p>
+          <div class="res" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="ep-handle">
+      <p class="eyebrow"><b>15</b> reader <i></i></p>
+      <div class="ep">
+        <div class="hd">
+          <span class="path"><span class="verb">GET</span>/api/handle</span>
+          <button class="btn sm" data-try="/api/handle?h=elonmusk">try it</button>
+        </div>
+        <div class="bd">
+          <p>Resolves a handle to a name, follower count and avatar. A handle that does not exist
+            returns <code>200</code> with <code>exists: false</code> — not a 404, because "we looked
+            and it is not there" is a successful read.</p>
+          <table class="tbl" style="margin:6px 0 10px">
+            <thead><tr><th style="width:110px">param</th><th>meaning</th></tr></thead>
+            <tbody><tr><td class="nowrap"><code>h</code></td><td>a handle, with or without the leading @</td></tr></tbody>
+          </table>
+          <div class="res" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="ep-coin">
+      <p class="eyebrow"><b>16</b> reader <i></i></p>
+      <div class="ep">
+        <div class="hd">
+          <span class="path"><span class="verb">GET</span>/api/coin</span>
+          <button class="btn sm" data-try="/api/coin?ca=DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263&amp;fee=1">try it</button>
+        </div>
+        <div class="bd">
+          <p>Reads a Solana mint's pair from Dexscreener and derives the creator fee that funds the
+            wallet. Pairs are filtered to <code>chainId: 'solana'</code>, so a same-symbol token on
+            another chain can never be picked up by mistake.</p>
+          <table class="tbl" style="margin:6px 0 10px">
+            <thead><tr><th style="width:110px">param</th><th>meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="nowrap"><code>ca</code></td><td>a base58 Solana mint, 32–44 characters. Anything else is a <code>400</code>.</td></tr>
+              <tr><td class="nowrap"><code>fee</code></td><td>creator fee percent, clamped 0–3 to match pump.fun's cap. Defaults to 1.</td></tr>
+            </tbody>
+          </table>
+          <p>Returns <code>price</code>, <code>marketCap</code>, <code>liquidity</code>,
+            <code>volume24</code>, <code>feePerDay</code>, <code>feePerHour</code> and
+            <code>hasPair</code>. Where there is no pair, every figure is <code>null</code> — never
+            <code>0</code>.</p>
+          <p class="w" style="font-size:12.5px">The example reads a different Solana token, because
+            $HIRE has no mint yet. It is there to prove the reader works, not to suggest a pair
+            exists.</p>
+          <div class="res" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec rv" id="errors">
+      <p class="eyebrow"><b>17</b> errors <i></i></p>
+      <h2>What a failure <em>looks like</em></h2>
+      <p>The readers do not invent data to avoid an error state and do not return zeros to look
+        healthy. There are three shapes of answer.</p>
+      <div class="box p0">
+        <table class="tbl">
+          <thead><tr><th style="width:100px">code</th><th>meaning</th></tr></thead>
+          <tbody>
+            <tr><td><b>200</b></td><td>The read succeeded — including "we looked and it does not exist", which comes back with <code>exists: false</code> or <code>hasPair: false</code>.</td></tr>
+            <tr><td><b>400</b></td><td>The input was the wrong shape: a missing job, a non-numeric post id, a contract address that is not base58. Nothing upstream was called.</td></tr>
+            <tr><td><b>502</b></td><td>The upstream source could not be reached. The site shows a dash and says so out loud.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The <a class="lnk" href="index.html#status">status section</a> probes all five from your
+        own browser on every page load, so a reader being down is visible on the page rather than
+        inferred from a silent dash.</p>
+    </section>
+
+    <section class="sec rv" id="operator">
+      <p class="eyebrow"><b>18</b> the operator <i></i></p>
+      <h2>The part that is <em>not autonomous</em></h2>
+      <p>X Money accounts belong to people. There is no developer API that lets an autonomous agent
+        hold one and push transfers, so a human taps send. We are not going to describe that as
+        automated.</p>
+      <p>What the human does <b>not</b> do is decide anything. The bond, the amount, the recipient
+        and the outcome are all fixed onchain before they touch it. Here is the honest version of
+        what they could do wrong, and where you would catch them.</p>
+      <div class="box p0">
+        <table class="tbl">
+          <thead><tr><th style="width:40%">the operator</th><th>because</th></tr></thead>
+          <tbody>
+            <tr><td><b>can refuse to send</b></td><td>then the settlement instruction exists and the payment never follows it. The gap is public and sits in the ledger permanently.</td></tr>
+            <tr><td><b>can send without being told</b></td><td>then forfeited-minus-paid on the ledger stops adding up. The discrepancy is the signal.</td></tr>
+            <tr><td><b>cannot open a bond</b></td><td>no signer. Only the agent key can.</td></tr>
+            <tr><td><b>cannot change an amount</b></td><td>the amount is in the Bond account before any payment exists.</td></tr>
+            <tr><td><b>cannot settle or cancel</b></td><td>terminal states come from the agent's instruction, or from <code>expire()</code> which anyone can call.</td></tr>
+            <tr><td><b>cannot hide a failure</b></td><td>the failed count is on the Mark account and is never decremented.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Reducing this role is the main engineering work ahead. It will not be described as gone
+        before it is gone.</p>
+    </section>
+
+    <section class="sec rv" id="live">
+      <p class="eyebrow"><b>19</b> what is live <i></i></p>
+      <h2>Working, <em>and not yet</em></h2>
+      <p>Piece by piece, because "coming soon" across a whole site tells you nothing.</p>
+      <div class="box p0">
+        <table class="tbl">
+          <thead><tr><th style="width:42%">piece</th><th style="width:130px">state</th><th>note</th></tr></thead>
+          <tbody>
+            <tr><td><b>The commitment hash</b></td><td><span class="pill live">live</span></td><td>Real SHA-256, cross-checked against the server in front of you.</td></tr>
+            <tr><td><b>The capacity model</b></td><td><span class="pill live">live</span></td><td>Arithmetic on a balance you type in.</td></tr>
+            <tr><td><b>The post reader</b></td><td><span class="pill live">live</span></td><td>Reads any public post right now.</td></tr>
+            <tr><td><b>The handle reader</b></td><td><span class="pill live">live</span></td><td>Resolves any public account.</td></tr>
+            <tr><td><b>The coin reader</b></td><td><span class="pill">waiting</span></td><td>Works; has no mint to point at yet.</td></tr>
+            <tr><td><b>The program</b></td><td><span class="pill no">not deployed</span></td><td>Specified above. Not on chain.</td></tr>
+            <tr><td><b>Bonds and settlements</b></td><td><span class="pill no">none</span></td><td>No job has been taken. The ledger is empty and says so.</td></tr>
+            <tr><td><b>The mint address</b></td><td><span class="pill no">none yet</span></td><td>Does not exist. See below.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sec rv" id="notchain">
+      <p class="eyebrow"><b>20</b> not on chain yet <i></i></p>
+      <h2>What is <em>not</em> verifiable today</h2>
+      <p>This is the part most projects bury. The settlement rules above describe intended
+        behaviour, not observed behaviour, because no bond has ever been opened.</p>
+      <ul class="list">
+        <li>There is no mint, so there is no creator fee, no wallet balance and therefore a ceiling
+          of zero.</li>
+        <li>The program is not deployed. The account layouts and discriminators are a specification,
+          not something you can currently decode from a live account.</li>
+        <li>No job has been bonded, so the ledger has zero rows and no receipt exists.</li>
+        <li>Every figure in the capacity model is arithmetic on a number you chose. It is not a
+          projection and not a promise.</li>
+      </ul>
+      <p>What <b>is</b> checkable today: the commitment function, which you can verify three ways
+        from <a class="lnk" href="#commit">the commitment</a>; the readers, which you can call
+        yourself from the buttons above; and this document, which carries its own changelog.</p>
+      <div class="note">
+        <span class="nt">The standard being set</span>
+        <p>Once bonds start settling, every one is a public row. A job missing from the ledger is a
+          broken promise visible from the outside, which is the point of publishing the ledger at
+          all.</p>
+      </div>
+    </section>
+
+    <section class="sec rv" id="scam">
+      <p class="eyebrow"><b>21</b> scams <i></i></p>
+      <h2>Before there is <em>an address</em></h2>
+      <div class="note">
+        <span class="nt">Read this one</span>
+        <p><b>$HIRE has no mint address at the time of writing.</b> When one exists it will appear
+          on the front page of this site and in the pinned post at the same moment. Anyone posting
+          an address before that is scamming you — including if they say they are early, including
+          if the account looks right.</p>
+      </div>
+      <ul class="list">
+        <li>Nobody involved will DM you an address, and nobody will ask you to send anything to
+          receive a forfeited bond.</li>
+        <li>Being paid a bond requires no action from you, so any message asking you to claim,
+          connect, verify or sign is not from this.</li>
+        <li>There is no presale, no allowlist and no private round. There is nothing to be early to.</li>
+        <li>Bonds arrive as dollars in X Money. They do not arrive as a link.</li>
+      </ul>
+    </section>
+
+    <section class="sec rv" id="changelog">
+      <p class="eyebrow"><b>22</b> changelog <i></i></p>
+      <h2>Everything that <em>has moved</em></h2>
+      <p>Any change to the commitment format, the bond ratio, the settlement rule or the
+        instruction set gets a row here and a post with a date on it. A rule that changes without
+        appearing in this table has not changed legitimately.</p>
+      <div class="box p0">
+        <table class="tbl">
+          <thead><tr><th style="width:100px">version</th><th style="width:130px">date</th><th>change</th></tr></thead>
+          <tbody>
+            <tr><td><b>0.1</b></td><td class="nowrap">pre-launch</td><td>First publication: canonical commitment format <code>HIRE/v1</code>, bond equal to price, deadline-only settlement, four accounts, six instructions, five readers.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <aside class="toc">
+    <p class="ph">On this page</p>
+    <div id="toc"></div>
+  </aside>
+</div>
+
+<div class="foot">
+  <p>The mechanic is one sentence. This page is the rest of it.</p>
+  <a class="btn solid" href="index.html#bond">commit a job</a>
+  <a class="btn" href="index.html">back to HIRE</a>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+$('#mb').addEventListener('click', () => $('#menu').classList.toggle('open'));
+
+/* reveals, with a sweep so a sidebar jump never strands a section */
+const rvo = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting){ e.target.classList.add('vis'); rvo.unobserve(e.target); }
+}), { threshold:.06, rootMargin:'0px 0px -40px 0px' });
+const rvAll = [...document.querySelectorAll('.rv')];
+rvAll.forEach(e => rvo.observe(e));
+const rvSweep = () => rvAll.forEach(el => {
+  if (!el.classList.contains('vis') && el.getBoundingClientRect().top < innerHeight){
+    el.classList.add('vis'); rvo.unobserve(el);
+  }
+});
+addEventListener('scroll', rvSweep, { passive:true });
+addEventListener('hashchange', rvSweep);
+
+/* the right rail builds itself from the article's own headings */
+const heads = [...document.querySelectorAll('.art .sec')].map(sec => {
+  const h2 = sec.querySelector('h2'), ep = sec.querySelector('.ep .path');
+  return {
+    id: sec.id,
+    label: ep ? ep.textContent.replace('GET','').trim() : (h2 ? h2.textContent.trim() : sec.id),
+    subs: [...sec.querySelectorAll('h3[id]')].map(h => ({ id:h.id, label:h.textContent.replace(/^#\s*/,'') })),
+  };
+});
+$('#toc').innerHTML = heads.map(h =>
+  `<a href="#${h.id}">${h.label}</a>` +
+  h.subs.map(s => `<a class="sub" href="#${s.id}">${s.label}</a>`).join('')).join('');
+
+/* scroll-spy over in-page anchors only — a bare 'index.html' would throw */
+const spy = [...document.querySelectorAll('.side a[href^="#"], .toc a[href^="#"]')];
+const targets = new Map();
+spy.forEach(a => {
+  const t = document.querySelector(a.getAttribute('href'));
+  if (!t) return;
+  if (!targets.has(t)) targets.set(t, []);
+  targets.get(t).push(a);
+});
+const seen = new Set();
+const so = new IntersectionObserver(es => {
+  es.forEach(e => e.isIntersecting ? seen.add(e.target) : seen.delete(e.target));
+  if (!seen.size) return;
+  const top = [...seen].sort((a,b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
+  spy.forEach(a => a.classList.remove('on'));
+  (targets.get(top) || []).forEach(a => a.classList.add('on'));
+}, { rootMargin:'-70px 0px -66% 0px' });
+targets.forEach((_, t) => so.observe(t));
+
+/* live "try it" against our own readers */
+const fmt = v => {
+  if (v === null) return '<b style="color:#585d67">null</b>';
+  if (typeof v === 'number') return '<b>' + v.toLocaleString('en-US') + '</b>';
+  if (typeof v === 'boolean') return '<b>' + v + '</b>';
+  if (Array.isArray(v)) return '<b>[' + v.length + ' rows]</b>';
+  const s = String(v);
+  return '<b>' + (s.length > 190 ? s.slice(0,190) + '…' : s)
+    .replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])) + '</b>';
+};
+
+document.querySelectorAll('[data-try]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const url = btn.dataset.try;
+    const out = btn.closest('.ep').querySelector('.res');
+    out.hidden = false;
+    out.textContent = 'GET ' + url + '\n\ncalling…';
+    const t0 = performance.now();
+    try {
+      const r = await fetch(url);
+      const j = await r.json();
+      const ms = Math.round(performance.now() - t0);
+      out.innerHTML = 'GET ' + url.replace(/&/g,'&amp;') + '\n\n'
+        + '<b>' + r.status + '</b>  ·  ' + ms + 'ms\n\n'
+        + Object.entries(j).map(([k,v]) => '  ' + k.padEnd(16) + fmt(v)).join('\n');
+    } catch {
+      out.innerHTML = 'GET ' + url.replace(/&/g,'&amp;') + '\n\n<b>unreachable</b>  ·  '
+        + Math.round(performance.now() - t0) + 'ms\n\n'
+        + '  The reader could not be called from this page. If you are viewing this\n'
+        + '  file locally rather than on the deployed site, that is expected.';
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HIRE</title>
+<meta name="description" content="An agent that works for you. It bonds every job against its own wallet before it starts, and if it fails to deliver the bond pays you — in dollars, through X Money. Its balance is its track record.">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-64.png" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<meta property="og:title" content="HIRE">
+<meta property="og:description" content="It works. It bonds every job. If it fails, it pays you.">
+<meta property="og:image" content="assets/pfp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000; --panel:#07070a; --hair:rgba(255,255,255,.11); --hair2:rgba(255,255,255,.055);
+  --white:#f2f3f5; --grey:#8b909c; --dim:#585d67; --faint:#34383f;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{overflow-x:hidden;scroll-behavior:smooth}
+body{overflow-x:clip;margin:0;background:var(--bg);color:var(--white);
+  font-family:var(--mono);font-size:14.5px;line-height:1.72;-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+a{color:inherit}
+section[id]{scroll-margin-top:22px}
+pre{margin:0;font-family:var(--mono)}
+.w{color:var(--white)} .g{color:var(--grey)} .d{color:var(--dim)}
+
+/* the signal: a flicker veil and scanlines, both fixed so position:sticky lives */
+.crt{position:fixed;inset:0;pointer-events:none;z-index:70;background:#000;
+  animation:crt 6.4s ease-in-out infinite;will-change:opacity}
+@keyframes crt{
+  0%{opacity:.010} 11%{opacity:.062} 23%{opacity:.016} 38%{opacity:.080}
+  49%{opacity:.020} 63%{opacity:.052} 77%{opacity:.012} 88%{opacity:.044} 100%{opacity:.010}
+}
+.scan{position:fixed;inset:0;pointer-events:none;z-index:69;opacity:.55;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.028) 0 1px,transparent 1px 3px)}
+
+nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;
+  padding:13px 20px;border-bottom:1px solid var(--hair);position:sticky;top:0;z-index:40;
+  background:rgba(0,0,0,.9);backdrop-filter:blur(9px)}
+nav .sp{min-width:0}
+nav .links{display:flex;justify-content:center;align-items:center;gap:0;flex-wrap:wrap}
+nav a{font-size:12.5px;color:var(--dim);text-decoration:none;padding:3px 9px;transition:.15s}
+nav a:hover{color:var(--white)}
+nav a.on{color:var(--white)}
+nav a+a{border-left:1px solid var(--hair2)}
+#mb{display:none;background:none;border:1px solid var(--hair);color:var(--white);
+  padding:6px 10px;font-size:12px;cursor:pointer;font-family:var(--mono)}
+
+.hero{padding:52px 20px 40px;text-align:center;border-bottom:1px solid var(--hair)}
+#art{display:inline-block;white-space:pre;line-height:1.02;letter-spacing:.055em;
+  font-size:clamp(4.2px,1.02vw,13px);color:var(--white);
+  text-shadow:0 0 10px rgba(255,255,255,.26);min-height:150px}
+.hero .lede{margin:26px auto 6px;font-size:clamp(15px,2.1vw,19px);max-width:44ch}
+.hero .it{color:var(--grey);font-style:italic;margin:0 auto;max-width:56ch;font-size:13.5px}
+.hero .sub{color:var(--grey);max-width:70ch;margin:20px auto 24px;font-size:13.5px}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:9px 16px;font-size:13px;font-family:var(--mono);
+  text-decoration:none;cursor:pointer;border:1px solid var(--hair);background:transparent;
+  color:var(--white);transition:.15s}
+.btn:hover{border-color:var(--white)}
+.btn.solid{background:var(--white);color:#000;border-color:var(--white);font-weight:600}
+.btn.solid:hover{background:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+
+.rail{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--hair)}
+.rail div{padding:15px 14px;border-right:1px solid var(--hair2)}
+.rail div:last-child{border-right:0}
+.rail span{display:block;font-size:9.5px;letter-spacing:.16em;color:var(--dim);
+  text-transform:uppercase;margin-bottom:5px}
+.rail b{font-size:17px;font-weight:600}
+
+.band{padding:56px 20px;border-bottom:1px solid var(--hair)}
+.wrap{max-width:960px;margin:0 auto}
+.eyebrow{color:var(--dim);font-size:11.5px;letter-spacing:.12em;margin:0 0 15px;
+  display:flex;align-items:center;gap:10px;text-transform:lowercase}
+.eyebrow b{color:var(--white);font-weight:600}
+.eyebrow i{flex:1;height:1px;background:var(--hair2);display:block}
+h2{font-size:clamp(19px,2.7vw,25px);font-weight:600;margin:0 0 10px;letter-spacing:-.01em}
+h2 em{font-style:italic;color:var(--grey);font-weight:400}
+.lede{color:var(--grey);max-width:78ch;margin:0 0 24px;font-size:13.5px}
+
+.box{border:1px solid var(--hair);background:var(--panel);padding:18px}
+.box.p0{padding:0}
+.bt{color:var(--dim);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  margin:0 0 14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rows{border-top:1px solid var(--hair2)}
+.rows .r{display:grid;grid-template-columns:54px 1fr;gap:14px;padding:15px 0;
+  border-bottom:1px solid var(--hair2);align-items:start}
+.rows .r:last-child{border-bottom:0}
+.rows .n{color:var(--white);font-size:12px}
+.rows h3{margin:0 0 4px;font-size:14.5px;font-weight:600}
+.rows p{margin:0;color:var(--grey);font-size:13px}
+
+ul.list{margin:0;padding:0;list-style:none}
+ul.list li{color:var(--grey);font-size:13px;padding:8px 0 8px 17px;position:relative;
+  border-bottom:1px solid var(--hair2)}
+ul.list li:last-child{border-bottom:0}
+ul.list li::before{content:"·";position:absolute;left:3px;color:var(--white)}
+
+table.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+table.tbl th{text-align:left;color:var(--dim);font-weight:500;font-size:10px;
+  letter-spacing:.13em;text-transform:uppercase;padding:12px 14px;border-bottom:1px solid var(--hair)}
+table.tbl td{padding:11px 14px;border-bottom:1px solid var(--hair2);color:var(--grey);vertical-align:top}
+table.tbl tr:last-child td{border-bottom:0}
+table.tbl td b{color:var(--white);font-weight:600}
+table.tbl td.none{text-align:center;color:var(--dim);padding:30px 14px}
+.st.ok{color:var(--white)} .st.bad{color:var(--grey)} .st.wait{color:var(--dim)}
+.st.bad::before{content:"! ";color:var(--white)}
+
+label{display:block;font-size:10px;letter-spacing:.14em;color:var(--dim);
+  text-transform:uppercase;margin:0 0 6px}
+input[type=text],input[type=number],textarea{width:100%;padding:10px 12px;
+  border:1px solid var(--hair);background:#030304;color:var(--white);
+  font-family:var(--mono);font-size:13.5px;line-height:1.6}
+textarea{resize:vertical;min-height:74px}
+input:focus,textarea:focus{outline:none;border-color:var(--white)}
+.field{margin-bottom:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.out{margin-top:14px;border-top:1px solid var(--hair2);padding-top:14px;font-size:13px;
+  color:var(--grey);word-break:break-word}
+.out b{color:var(--white)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:12px;padding:8px 0;
+  border-bottom:1px solid var(--hair2);font-size:13px}
+.kv:last-of-type{border-bottom:0}
+.kv span{color:var(--dim)}
+.kv b{font-weight:600}
+.mono-blk{background:#030304;border:1px solid var(--hair2);padding:12px 13px;
+  font-size:12px;white-space:pre-wrap;word-break:break-all;color:var(--grey);margin:0}
+.hash{word-break:break-all;font-size:12.5px;color:var(--white);letter-spacing:.02em}
+.badge{display:inline-block;font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  padding:2px 8px;border:1px solid var(--hair);color:var(--dim);white-space:nowrap}
+.badge.on{color:#000;background:var(--white);border-color:var(--white);font-weight:600}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--hair)}
+.vs .col{padding:0}
+.vs .col+.col{border-left:1px solid var(--hair)}
+.vs .ch{font-size:10px;letter-spacing:.15em;color:var(--dim);padding:13px 16px;
+  border-bottom:1px solid var(--hair);text-transform:uppercase}
+.vs .col:last-child .ch{color:var(--white)}
+.vs ul{margin:0;padding:0;list-style:none}
+.vs li{padding:13px 16px;border-bottom:1px solid var(--hair2);font-size:13px;color:var(--grey)}
+.vs li:last-child{border-bottom:0}
+.vs .col:last-child li{color:var(--white)}
+
+.empty{border:1px dashed var(--hair);padding:36px 20px;text-align:center;color:var(--grey)}
+.empty h4{margin:0 0 6px;color:var(--white);font-size:14.5px;font-weight:600}
+.empty p{margin:0 0 14px;font-size:13px}
+.status{display:inline-flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.13em;
+  color:var(--dim);text-transform:uppercase}
+.status i{width:6px;height:6px;border-radius:50%;background:var(--dim);display:block}
+.status.live i{background:var(--white)}
+.head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:15px}
+
+details{border-bottom:1px solid var(--hair2);padding:13px 0}
+summary{cursor:pointer;font-weight:600;font-size:14px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+ ";color:var(--white)}
+details[open] summary::before{content:"− ";color:var(--white)}
+details p{color:var(--grey);margin:9px 0 0 16px;font-size:13px}
+
+.rv{opacity:0;transform:translateY(11px);transition:opacity .5s ease,transform .5s ease}
+.rv.vis{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;transition:none}
+  .crt{animation:none;opacity:0} #art{text-shadow:none}
+}
+@media(max-width:880px){
+  .rail{grid-template-columns:repeat(2,1fr)} .rail div{border-bottom:1px solid var(--hair2)}
+  .two,.three,.grid2{grid-template-columns:1fr}
+  .vs{grid-template-columns:1fr} .vs .col+.col{border-left:0;border-top:1px solid var(--hair)}
+}
+@media(max-width:700px){
+  nav{grid-template-columns:1fr auto}
+  nav .sp:first-child{display:none}
+  nav .links{display:none;grid-column:1/-1;flex-direction:column;align-items:center;gap:2px;padding-top:10px}
+  nav .links.open{display:flex}
+  nav a+a{border-left:0}
+  #mb{display:block}
+  .band{padding:42px 16px} .hero{padding:38px 16px 30px}
+  table.tbl{font-size:11.5px} table.tbl th,table.tbl td{padding:9px 8px}
+}
+</style>
+</head>
+<body>
+<div class="crt" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+
+<nav>
+  <div class="sp"></div>
+  <div class="links" id="menu">
+    <a href="#rule">rule</a>
+    <a href="#bond">bond</a>
+    <a href="#ceiling">ceiling</a>
+    <a href="#read">read</a>
+    <a href="#ledger">ledger</a>
+    <a href="#limits">limits</a>
+    <a href="#spec">spec</a>
+    <a href="#faq">faq</a>
+    <a href="docs.html" class="ext">docs</a>
+  </div>
+  <div class="sp" style="text-align:right"><button id="mb" aria-label="Menu">menu</button></div>
+</nav>
+
+<header class="hero">
+  <pre id="art" aria-label="HIRE">computing…</pre>
+  <p class="lede">An agent that works for you.</p>
+  <p class="it">It stakes its own money on every job it takes.<br>
+    If it does not deliver, that money becomes yours.</p>
+  <p class="sub">You pay it to do a job. Before it starts, it posts a bond equal to what you
+    paid, onchain, against the exact terms. Deliver and it keeps the fee. Fail and the bond is
+    yours — in dollars, through X Money. Nothing to claim.</p>
+  <div class="btns">
+    <a class="btn solid" href="#bond">commit a job</a>
+    <a class="btn" href="#rule">how it works</a>
+    <a class="btn" href="docs.html">docs</a>
+  </div>
+</header>
+
+<div class="rail">
+  <div><span>Wallet</span><b id="s-wallet">—</b></div>
+  <div><span>Job ceiling</span><b id="s-ceiling">—</b></div>
+  <div><span>Jobs delivered</span><b id="s-done">—</b></div>
+  <div><span>Bonds forfeited</span><b id="s-lost">—</b></div>
+  <div><span>Claims required</span><b>0</b></div>
+</div>
+
+<!-- ─────────────────────────────── 01 -->
+<section class="band" id="rule">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>01</b> the rule <i></i></p>
+    <h2>It puts its own money up. <em>Every time.</em></h2>
+    <p class="lede">Every agent you can hire today is free to fail you. This one cannot do it
+      for nothing — the cost of failing is written down, in advance, onchain, and it is paid to
+      the person who was failed.</p>
+    <div class="box p0">
+      <div class="rows" style="border-top:0">
+        <div class="r"><div class="n">01</div><div><h3>You commit the job</h3>
+          <p>The exact terms and the price are hashed. That hash is the job — not a description
+            of it, the job itself. One character different is a different job.</p></div></div>
+        <div class="r"><div class="n">02</div><div><h3>It bonds before it starts</h3>
+          <p>It opens a bond onchain equal to what you paid, out of its own wallet, against that
+            hash and a deadline. No bond, no work — it cannot start without staking.</p></div></div>
+        <div class="r"><div class="n">03</div><div><h3>It delivers, or it does not</h3>
+          <p>Proof goes in the same public thread the job was agreed in. There is no private
+            appeal and no quiet extension.</p></div></div>
+        <div class="r"><div class="n">04</div><div><h3>The deadline settles it</h3>
+          <p>Delivered, the bond returns to its wallet and it keeps the fee. Not delivered, the
+            bond goes to you and so does your fee back. Failing costs it exactly what delivering
+            would have earned, twice over.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── 02 -->
+<section class="band" id="bond">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>02</b> the bond <i></i></p>
+    <div class="head">
+      <h2 style="margin:0">Commit a job <em>right now</em></h2>
+      <span class="status" id="crypto-status"><i></i><span>idle</span></span>
+    </div>
+    <p class="lede">This is the real commitment function, not a mock-up. Type a job and a price
+      and the page builds the exact canonical string and hashes it with SHA-256 in your browser.
+      The same string is hashed independently on the server and the two are compared in front of
+      you. Change one character and watch the hash move.</p>
+
+    <div class="box">
+      <div class="bt"><span>OPEN_BOND — INPUT</span><span id="b-chars">0 chars</span></div>
+      <div class="field">
+        <label for="f-job">the job, exactly as agreed</label>
+        <textarea id="f-job" spellcheck="false">Read every reply to the pinned post, pull out the ones asking a question, and post a numbered summary in this thread.</textarea>
+      </div>
+      <div class="three">
+        <div class="field">
+          <label for="f-price">price (usd)</label>
+          <input type="number" id="f-price" value="40" min="0" step="1">
+        </div>
+        <div class="field">
+          <label for="f-deadline">deadline (hours)</label>
+          <input type="number" id="f-deadline" value="24" min="1" max="720" step="1">
+        </div>
+        <div class="field">
+          <label>bond it must stake</label>
+          <input type="text" id="f-bond" value="$40.00" readonly tabindex="-1">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn solid" id="b-commit">verify against the server</button>
+        <button class="btn" id="b-tamper">tamper with one character</button>
+      </div>
+
+      <div class="out" id="o-bond">
+        <div class="bt" style="margin:0 0 10px"><span>CANONICAL STRING — WHAT IS HASHED</span>
+          <span id="b-bytes">— bytes</span></div>
+        <pre class="mono-blk" id="o-canon">—</pre>
+
+        <div style="margin-top:14px">
+          <div class="bt" style="margin:0 0 8px"><span>SHA-256 — IN YOUR BROWSER</span>
+            <span class="badge" id="bdg-client">web crypto</span></div>
+          <div class="hash" id="o-hash-c">—</div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="bt" style="margin:0 0 8px"><span>SHA-256 — ON THE SERVER</span>
+            <span class="badge" id="bdg-server">not checked</span></div>
+          <div class="hash" id="o-hash-s">—</div>
+        </div>
+        <div class="kv" style="margin-top:14px"><span>agreement</span><b id="o-match">—</b></div>
+        <div class="kv"><span>price / bond</span><b id="o-amounts">—</b></div>
+        <div class="kv"><span>if it fails, you receive</span><b id="o-fail">—</b></div>
+      </div>
+    </div>
+
+    <div class="box" style="margin-top:16px">
+      <div class="bt"><span>THE ACCOUNT THIS WOULD OPEN</span><span>byte layout</span></div>
+      <table class="tbl">
+        <thead><tr><th>field</th><th>bytes</th><th>value</th></tr></thead>
+        <tbody id="o-layout"><tr><td colspan="3" class="none">commit a job above to see it</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── 03 -->
+<section class="band" id="ceiling">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>03</b> the ceiling <i></i></p>
+    <h2>The biggest job it can take <em>is the size of its own wallet.</em></h2>
+    <p class="lede">Because the bond equals the price, the agent cannot accept a job it could not
+      afford to fail. That is the whole capital model: its balance is not a treasury, it is a
+      ceiling. Earning raises it. Failing lowers it. Nothing else moves it.</p>
+
+    <div class="box">
+      <div class="bt"><span>CAPACITY MODEL</span><span>arithmetic only — no forecast</span></div>
+      <div class="two">
+        <div class="field">
+          <label for="f-bal">wallet balance (usd)</label>
+          <input type="number" id="f-bal" value="2500" min="0" step="10">
+        </div>
+        <div class="field">
+          <label for="f-ask">job you want to hire it for (usd)</label>
+          <input type="number" id="f-ask" value="400" min="0" step="10">
+        </div>
+      </div>
+      <div class="kv"><span>job ceiling right now</span><b id="c-ceil">—</b></div>
+      <div class="kv"><span>can it accept this job</span><b id="c-can">—</b></div>
+      <div class="kv"><span>balance if it delivers</span><b id="c-win">—</b></div>
+      <div class="kv"><span>balance if it fails</span><b id="c-lose">—</b></div>
+      <div class="kv"><span>consecutive failures until it cannot work at all</span><b id="c-ruin">—</b></div>
+      <pre class="mono-blk" id="c-bar" style="margin-top:14px">—</pre>
+    </div>
+
+    <div class="box p0" style="margin-top:16px">
+      <table class="tbl">
+        <thead><tr><th>wallet</th><th>largest job</th><th>failures to ruin at ceiling</th><th>at 1/10 ceiling</th></tr></thead>
+        <tbody id="c-tbl"></tbody>
+      </table>
+    </div>
+    <p class="lede" style="margin:16px 0 0">The wallet is funded by the creator fee, so trading
+      volume does not buy hype here — it raises the ceiling on what the agent can be hired for.
+      That is the only thing it does.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── 04 -->
+<section class="band" id="read">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>04</b> read <i></i></p>
+    <h2>The readers it runs on, <em>pointed at anything you like</em></h2>
+    <p class="lede">Jobs are agreed in public threads, so the agent has to read X. These are the
+      same endpoints it uses, live, and they work on any public post or handle — not only ones
+      involving this account. Try your own.</p>
+    <div class="grid2">
+      <div class="box">
+        <div class="bt"><span>GET /api/tweet</span><span id="rk-src">idle</span></div>
+        <div class="field">
+          <label for="f-url">post url or id</label>
+          <input type="text" id="f-url" placeholder="https://x.com/someone/status/123…" spellcheck="false">
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn solid" id="b-read">read post</button>
+          <button class="btn" id="b-rclear">clear</button>
+        </div>
+        <div class="out" id="o-read" hidden></div>
+      </div>
+      <div class="box">
+        <div class="bt"><span>GET /api/handle</span><span id="hk-src">idle</span></div>
+        <div class="field">
+          <label for="f-h">x handle</label>
+          <input type="text" id="f-h" placeholder="@cobie" spellcheck="false">
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn solid" id="b-handle">read handle</button>
+          <button class="btn" id="b-hclear">clear</button>
+        </div>
+        <div class="out" id="o-handle" hidden></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── 05 -->
+<section class="band" id="ledger">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>05</b> the ledger <i></i></p>
+    <div class="head">
+      <h2 style="margin:0">Every job, <em>delivered or not</em></h2>
+      <span class="status" id="led-count">0 jobs</span>
+    </div>
+    <p class="lede">One row per job: the hash it was committed under, what it paid, whether proof
+      arrived before the deadline, and where the bond went. Failures are not hidden in here —
+      they are the rows that matter, because they are the ones that cost it money.</p>
+    <div class="box p0">
+      <table class="tbl">
+        <thead><tr><th>job</th><th>price</th><th>bond</th><th>outcome</th><th>receipt</th></tr></thead>
+        <tbody>
+          <tr><td colspan="5" class="none">no jobs have been taken yet — nothing is back-filled, nothing is estimated</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── 06 -->
+<section class="band" id="limits">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>06</b> limits <i></i></p>
+    <h2>What it cannot do, <em>and what follows from that</em></h2>
+    <p class="lede">Every line on the left is a real limitation. Every line on the right is the
+      design decision it forced. Nothing here is a feature written backwards from a constraint we
+      were hiding.</p>
+    <div class="vs">
+      <div class="col">
+        <div class="ch">IT CANNOT</div>
+        <ul>
+          <li>hold a bank account</li>
+          <li>send an X Money payment by itself</li>
+          <li>prove a job was done well, only that proof was filed</li>
+          <li>take a job larger than its own wallet</li>
+          <li>know whether you are satisfied</li>
+          <li>hide a failure</li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="ch">SO IT</div>
+        <ul>
+          <li>keeps its balance in a wallet anyone can read</li>
+          <li>publishes the instruction first, so a human who refuses to send leaves a visible gap</li>
+          <li>settles on the deadline and the proof, never on an opinion</li>
+          <li>refuses the job out loud rather than taking money it cannot cover</li>
+          <li>pays the bond on missing proof, not on complaints</li>
+          <li>leaves the row in the ledger with the bond marked forfeited</li>
+        </ul>
+      </div>
+    </div>
+    <div class="box" style="margin-top:16px">
+      <div class="bt"><span>THE OPERATOR</span><span>the part that is not autonomous</span></div>
+      <p class="lede" style="margin:0 0 14px">X Money accounts belong to people, so a human still
+        taps send. That human does not choose who gets paid — the bond, the amount and the
+        recipient are all fixed onchain before they touch anything. Here is exactly what they
+        could do wrong and where you would see it.</p>
+      <table class="tbl">
+        <thead><tr><th style="width:44%">the operator</th><th>where it shows</th></tr></thead>
+        <tbody>
+          <tr><td><b>can refuse to send</b></td><td>the payment instruction exists and the settlement never follows it. The gap sits in the ledger.</td></tr>
+          <tr><td><b>can send without being told</b></td><td>bonded-minus-settled on this page stops adding up.</td></tr>
+          <tr><td><b>cannot open a bond</b></td><td>no signer. The agent key is the only one that can.</td></tr>
+          <tr><td><b>cannot change an amount</b></td><td>the amount is in the account before the payment exists.</td></tr>
+          <tr><td><b>cannot settle or cancel</b></td><td>terminal states are the agent's instruction, and a bond leaves open exactly once.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── 07 -->
+<section class="band" id="spec">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>07</b> the program <i></i></p>
+    <h2>Four accounts. <em>Six instructions.</em></h2>
+    <p class="lede">Deliberately small. The program's job is not to run the agent — it is to hold
+      the commitments that make the agent's behaviour checkable from outside.</p>
+    <div class="box p0">
+      <table class="tbl">
+        <thead><tr><th>account</th><th>holds</th><th>written when</th></tr></thead>
+        <tbody>
+          <tr><td><b>Bond</b></td><td>job hash, price, bond, deadline slot, state</td><td>before work starts</td></tr>
+          <tr><td><b>Wallet</b></td><td>balance, lifetime earned, lifetime forfeited</td><td>every settlement</td></tr>
+          <tr><td><b>Client</b></td><td>handle hash, jobs hired, paid, forfeits received</td><td>first job, then each settlement</td></tr>
+          <tr><td><b>Mark</b></td><td>delivered count, failed count, current ceiling</td><td>every settlement</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box p0" style="margin-top:16px">
+      <table class="tbl">
+        <thead><tr><th>instruction</th><th>signer</th><th>effect</th></tr></thead>
+        <tbody>
+          <tr><td><b>initialize</b></td><td>agent</td><td>creates Wallet and Mark. Once.</td></tr>
+          <tr><td><b>open_bond</b></td><td>agent</td><td>locks price, bond, job hash and deadline. State → open.</td></tr>
+          <tr><td><b>file_proof</b></td><td>agent</td><td>attaches the proof post id. Does not settle anything.</td></tr>
+          <tr><td><b>settle_delivered</b></td><td>agent</td><td>bond returns, fee kept. State → delivered.</td></tr>
+          <tr><td><b>settle_failed</b></td><td>agent</td><td>bond and fee to the client. State → failed.</td></tr>
+          <tr><td><b>expire</b></td><td>anyone</td><td>past deadline with no proof, forces settle_failed. State → failed.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box" style="margin-top:16px">
+      <div class="bt"><span>STATE MACHINE</span><span>a bond leaves open exactly once</span></div>
+      <pre class="mono-blk" id="sm">open ──── file_proof ────▶ open (proof attached)
+  │                          │
+  │                          ├── settle_delivered ──▶ DELIVERED   bond returns, fee kept
+  │                          │
+  └── deadline passes ───────┴── settle_failed ─────▶ FAILED      bond + fee to the client
+
+anyone may call expire() after the deadline. the agent cannot sit on a bond
+to avoid settling it, and a failed bond can never return to open.</pre>
+    </div>
+    <p class="lede" style="margin:16px 0 0">There is no admin key and no upgrade authority after
+      the first month. The operator who taps send in X Money holds no key to this program at all.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── 08 -->
+<section class="band" id="status">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>08</b> status <i></i></p>
+    <div class="head">
+      <h2 style="margin:0">What is <em>actually up</em></h2>
+      <button class="btn" id="b-probe">re-run probes</button>
+    </div>
+    <p class="lede">Live probes against this site's own endpoints, run from your browser on load.
+      If one is down it says so here rather than quietly returning a zero.</p>
+    <div class="box p0">
+      <table class="tbl">
+        <thead><tr><th>endpoint</th><th>probe</th><th>state</th><th>ms</th></tr></thead>
+        <tbody id="probe-body">
+          <tr data-p="bond"><td><b>/api/bond</b></td><td>hash a known job</td><td class="st">—</td><td class="ms">—</td></tr>
+          <tr data-p="handle"><td><b>/api/handle</b></td><td>@elonmusk</td><td class="st">—</td><td class="ms">—</td></tr>
+          <tr data-p="tweet"><td><b>/api/tweet</b></td><td>a known post id</td><td class="st">—</td><td class="ms">—</td></tr>
+          <tr data-p="avatar"><td><b>/api/avatar</b></td><td>@cobie</td><td class="st">—</td><td class="ms">—</td></tr>
+          <tr data-p="coin"><td><b>/api/coin</b></td><td>a live solana mint</td><td class="st">—</td><td class="ms">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── 09 -->
+<section class="band" id="faq" style="border-bottom:0">
+  <div class="wrap rv">
+    <p class="eyebrow"><b>09</b> faq <i></i></p>
+    <h2>The awkward questions, <em>first</em></h2>
+    <div style="margin-top:16px">
+      <details open><summary>Is there a mint address yet?</summary>
+        <p>No. HIRE has no mint address at the time of writing. When one exists it will be on this
+          page and in the pinned post at the same moment. Anyone posting an address before it
+          appears here is scamming you.</p></details>
+      <details><summary>Why is everything on this page a dash?</summary>
+        <p>Because no job has been taken yet. A dash means we have no number. A zero would claim we
+          looked and found nothing, which is a different statement and not a true one.</p></details>
+      <details><summary>Who decides whether the job was done well?</summary>
+        <p>Nobody, and that is deliberate. The bond settles on whether proof was filed before the
+          deadline, not on whether anyone was pleased. A subjective standard is a standard the
+          agent could argue its way out of; a deadline is not.</p></details>
+      <details><summary>Then what stops it filing junk as proof?</summary>
+        <p>Nothing stops it filing. Everything is public — the job hash, the proof post and the
+          settlement — so junk proof is junk in front of the people deciding whether to hire it
+          again. The ledger is the only reputation it has, and it cannot edit it.</p></details>
+      <details><summary>What if it takes my money and vanishes?</summary>
+        <p>Then the deadline passes, nobody files proof, and <b>anyone</b> can call expire() to
+          force the failed settlement. It does not require the agent to co-operate with its own
+          punishment.</p></details>
+      <details><summary>Why can't it take a job bigger than its wallet?</summary>
+        <p>Because it could not cover the bond, and an uncovered bond is a promise rather than a
+          stake. It refuses those out loud. That is why the ceiling is on the page.</p></details>
+      <details><summary>Do I need a wallet to be paid a forfeited bond?</summary>
+        <p>No. X Money sends dollars to any X handle for free, so it arrives in your X Money
+          balance. No wallet to connect, no code to paste, no window after which it disappears.</p></details>
+      <details><summary>Is the payment automated?</summary>
+        <p>No, and we will not claim it is. X Money accounts belong to people, so a human taps
+          send. What is automated is everything that decides the payment — see
+          <a href="#limits">limits</a> for what that human can and cannot do, and where you would
+          catch them.</p></details>
+      <details><summary>Can I check the hash myself?</summary>
+        <p>Yes, and you should. The canonical string is printed in full in
+          <a href="#bond">the bond</a>. Pipe it through any SHA-256 implementation you trust and
+          compare — the page shows your browser's answer and the server's side by side precisely
+          so you do not have to take either on faith.</p></details>
+    </div>
+  </div>
+</section>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const usd = n => n == null ? '—' : '$' + Number(n).toLocaleString('en-US',
+  {minimumFractionDigits:2, maximumFractionDigits:2});
+const esc = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+
+/* ── mobile menu ─────────────────────────────────────────────────── */
+$('#mb').addEventListener('click', () => $('#menu').classList.toggle('open'));
+$$('#menu a').forEach(a => a.addEventListener('click', () => $('#menu').classList.remove('open')));
+
+/* ── the hero, computed into characters in your browser ──────────────
+   The brand claim is that the mark is computed rather than drawn, so the
+   page had better compute it: draw the wordmark large on a canvas, let the
+   browser average it down to a character grid, and map each cell to a glyph.
+   The luminance grid is built once; only the noise is reshuffled, which is
+   what makes it flicker without costing anything.                        */
+const RAMP = " .'`:;-=+ooO0#@";
+const mulberry = a => () => {
+  a |= 0; a = a + 0x6D2B79F5 | 0;
+  let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+};
+
+const CELL_ASPECT = 0.642;   // advance (0.6em + .055em tracking) / line-height (1.02em)
+
+function lumaGrid(text, cols, rows){
+  const SS = 8;
+  const big = document.createElement('canvas');
+  big.width = Math.round(cols * SS * CELL_ASPECT); big.height = rows * SS;
+  const b = big.getContext('2d');
+  b.fillStyle = '#000'; b.fillRect(0, 0, big.width, big.height);
+  b.fillStyle = '#fff';
+  b.textBaseline = 'alphabetic';
+
+  const TR = 0.20;
+  const widthAt = s => {
+    b.font = `700 ${s}px "IBM Plex Mono", monospace`;
+    let w = 0; for (const ch of text) w += b.measureText(ch).width;
+    return w + TR * s * (text.length - 1);
+  };
+  let size = rows * SS * 2;
+  while (size > 6 && (widthAt(size) > big.width * 0.98 || size * 0.74 > big.height * 0.98))
+    size = Math.floor(size * 0.94);
+  b.font = `700 ${size}px "IBM Plex Mono", monospace`;
+
+  const m = b.measureText(text);
+  const asc = m.actualBoundingBoxAscent || size * 0.72;
+  const desc = m.actualBoundingBoxDescent || 0;
+  let x = (big.width - widthAt(size)) / 2;
+  const y = (big.height - (asc + desc)) / 2 + asc;
+  for (const ch of text){
+    b.fillText(ch, x, y);
+    x += b.measureText(ch).width + TR * size;
+  }
+
+  const small = document.createElement('canvas');
+  small.width = cols; small.height = rows;
+  const s = small.getContext('2d');
+  s.imageSmoothingEnabled = true;
+  s.drawImage(big, 0, 0, cols, rows);
+  const px = s.getImageData(0, 0, cols, rows).data;
+
+  const g = new Float32Array(cols * rows);
+  for (let i = 0; i < cols * rows; i++) g[i] = px[i * 4] / 255;
+  return g;
+}
+
+function toText(grid, cols, rows, seed){
+  const rnd = mulberry(seed);
+  const out = [];
+  for (let y = 0; y < rows; y++){
+    let line = '';
+    for (let x = 0; x < cols; x++){
+      let v = grid[y * cols + x];
+      // strays bloom off the shape; holes punch through it
+      if (v < 0.06){
+        let near = 0;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++){
+          const yy = y + dy, xx = x + dx;
+          if (yy >= 0 && yy < rows && xx >= 0 && xx < cols) near = Math.max(near, grid[yy * cols + xx]);
+        }
+        if (near > 0.30 && rnd() < 0.20) v = 0.07 + rnd() * 0.13;
+      } else if (v > 0.55 && rnd() < 0.032){
+        v *= 0.30 + rnd() * 0.3;
+      }
+      if (v < 0.115){ line += ' '; continue; }
+      const t = Math.min(1, Math.pow(v, 0.92)) * 0.855;
+      line += RAMP[Math.min(RAMP.length - 1, Math.round(t * (RAMP.length - 1)))];
+    }
+    out.push(line.replace(/\s+$/, ''));
+  }
+  return out.join('\n');
+}
+
+(async function hero(){
+  const el = $('#art');
+  const COLS = 104, ROWS = 17;
+  try {
+    if (document.fonts){
+      await document.fonts.load('700 100px "IBM Plex Mono"');
+      await document.fonts.ready;
+    }
+  } catch {}
+  let grid;
+  try { grid = lumaGrid('HIRE', COLS, ROWS); }
+  catch { el.textContent = 'HIRE'; return; }
+  let seed = 1;
+  const paint = () => { el.textContent = toText(grid, COLS, ROWS, seed++); };
+  paint();
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(paint, 2400);
+})();
+
+/* ── 02 the bond: real SHA-256, cross-checked ─────────────────────── */
+const canonical = (job, price, bond, deadline) =>
+  ['HIRE/v1', `job=${job}`, `price=${price}`, `bond=${bond}`, `deadline=${deadline}h`].join('\n');
+const normalise = s => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 2000);
+
+async function sha256Hex(str){
+  const buf = new TextEncoder().encode(str);
+  const d = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const readInt = (sel, dflt, lo, hi) => {
+  const n = Math.floor(Number($(sel).value));
+  return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : dflt;
+};
+
+let lastCanon = '', serverTimer = null;
+
+async function bondLocal(){
+  const job = normalise($('#f-job').value);
+  const priceUsd = readInt('#f-price', 0, 0, 1000000);
+  const deadline = readInt('#f-deadline', 24, 1, 720);
+  const price = priceUsd * 100, bond = price;
+
+  $('#f-bond').value = usd(priceUsd);
+  $('#b-chars').textContent = job.length + ' chars';
+
+  if (!job){
+    $('#o-canon').textContent = 'a job is required — nothing to commit';
+    $('#o-hash-c').textContent = '—'; $('#o-hash-s').textContent = '—';
+    $('#o-match').textContent = '—'; $('#b-bytes').textContent = '— bytes';
+    $('#o-amounts').textContent = '—'; $('#o-fail').textContent = '—';
+    lastCanon = ''; return;
+  }
+
+  const msg = canonical(job, price, bond, deadline);
+  lastCanon = msg;
+  $('#o-canon').textContent = msg;
+  $('#b-bytes').textContent = new TextEncoder().encode(msg).length + ' bytes';
+  $('#o-amounts').textContent = `${usd(priceUsd)} / ${usd(priceUsd)}`;
+  $('#o-fail').textContent = `${usd(priceUsd * 2)} — your fee back, plus its bond`;
+
+  let h = '—';
+  if (window.crypto && crypto.subtle){
+    try { h = await sha256Hex(msg); } catch { h = 'web crypto unavailable here'; }
+  } else {
+    h = 'web crypto needs a secure context (https or localhost)';
+  }
+  $('#o-hash-c').textContent = h;
+  $('#bdg-client').textContent = /^[0-9a-f]{64}$/.test(h) ? 'web crypto' : 'unavailable';
+
+  // the server answer is now stale until re-checked
+  $('#bdg-server').textContent = 'not checked';
+  $('#bdg-server').classList.remove('on');
+  $('#o-hash-s').textContent = '—';
+  $('#o-match').textContent = '—';
+
+  clearTimeout(serverTimer);
+  serverTimer = setTimeout(bondServer, 650);
+}
+
+async function bondServer(){
+  if (!lastCanon) return;
+  const job = normalise($('#f-job').value);
+  const price = readInt('#f-price', 0, 0, 1000000) * 100;
+  const deadline = readInt('#f-deadline', 24, 1, 720);
+  const st = $('#crypto-status');
+  st.classList.remove('live'); st.lastElementChild.textContent = 'checking';
+  try {
+    const q = `/api/bond?job=${encodeURIComponent(job)}&price=${price}&deadline=${deadline}`;
+    const r = await fetch(q).then(r => r.json());
+    if (!r || !r.hash) throw new Error('no hash');
+    $('#o-hash-s').textContent = r.hash;
+    const mine = $('#o-hash-c').textContent.trim();
+    const same = mine === r.hash && r.canonical === lastCanon;
+    $('#bdg-server').textContent = same ? 'match' : 'differs';
+    $('#bdg-server').classList.toggle('on', same);
+    $('#o-match').textContent = same
+      ? 'identical — two independent implementations agree'
+      : 'MISMATCH — do not trust this commitment';
+    st.classList.toggle('live', same);
+    st.lastElementChild.textContent = same ? 'verified' : 'mismatch';
+    $('#o-layout').innerHTML = (r.layout || []).map(l =>
+      `<tr><td><b>${esc(l.field)}</b></td><td>${l.bytes}</td><td style="word-break:break-all">${esc(l.value)}</td></tr>`
+    ).join('') || '<tr><td colspan="3" class="none">no layout returned</td></tr>';
+  } catch {
+    $('#o-hash-s').textContent = 'could not reach the server';
+    $('#bdg-server').textContent = 'unreachable';
+    $('#bdg-server').classList.remove('on');
+    $('#o-match').textContent = 'unchecked — the browser hash above still stands on its own';
+    st.classList.remove('live'); st.lastElementChild.textContent = 'offline';
+  }
+}
+
+['#f-job', '#f-price', '#f-deadline'].forEach(s =>
+  $(s).addEventListener('input', bondLocal));
+$('#b-commit').addEventListener('click', bondServer);
+$('#b-tamper').addEventListener('click', () => {
+  // flip exactly one character, to show the hash is not a summary of the job
+  const t = $('#f-job');
+  const v = t.value;
+  if (!v.trim()) return;
+  const i = Math.max(0, Math.floor(v.length / 2));
+  const c = v[i];
+  t.value = v.slice(0, i) + (c === ' ' ? '_' : (c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase())) + v.slice(i + 1);
+  bondLocal();
+});
+bondLocal();
+
+/* ── 03 the ceiling ──────────────────────────────────────────────── */
+function ceiling(){
+  const bal = Math.max(0, Number($('#f-bal').value) || 0);
+  const ask = Math.max(0, Number($('#f-ask').value) || 0);
+  const can = ask > 0 && ask <= bal;
+
+  $('#c-ceil').textContent = usd(bal);
+  $('#c-can').textContent = ask === 0 ? '—'
+    : can ? 'yes — the bond is covered'
+          : `no — ${usd(ask - bal)} short of the bond`;
+  $('#c-win').textContent = can ? usd(bal + ask) : '—';
+  $('#c-lose').textContent = can ? usd(bal - ask) : '—';
+  $('#c-ruin').textContent = (can && ask > 0) ? Math.floor(bal / ask) : '—';
+
+  const W = 46;
+  const frac = bal > 0 ? Math.min(1, ask / bal) : 0;
+  const n = Math.round(frac * W);
+  $('#c-bar').textContent =
+    'ceiling  [' + '#'.repeat(W) + ']  ' + usd(bal) + '\n' +
+    'this job [' + '#'.repeat(n) + '·'.repeat(W - n) + ']  ' + usd(ask) +
+    (can ? '' : '   ← over the ceiling, refused');
+
+  $('#c-tbl').innerHTML = [500, 2500, 10000, 50000, 250000].map(v =>
+    `<tr><td><b>${usd(v)}</b></td><td>${usd(v)}</td><td>1</td><td>10</td></tr>`).join('');
+}
+['#f-bal', '#f-ask'].forEach(s => $(s).addEventListener('input', ceiling));
+ceiling();
+
+/* ── 04 readers ──────────────────────────────────────────────────── */
+const postId = v => {
+  const s = String(v || '').trim();
+  if (/^\d{5,25}$/.test(s)) return s;
+  const m = s.match(/(?:twitter|x)\.com\/[^/]+\/status(?:es)?\/(\d{5,25})/i)
+    || s.match(/\/status(?:es)?\/(\d{5,25})/i);
+  return m ? m[1] : null;
+};
+
+$('#b-rclear').addEventListener('click', () => {
+  $('#f-url').value = ''; $('#o-read').hidden = true; $('#rk-src').textContent = 'idle';
+});
+$('#b-hclear').addEventListener('click', () => {
+  $('#f-h').value = ''; $('#o-handle').hidden = true; $('#hk-src').textContent = 'idle';
+});
+
+$('#b-read').addEventListener('click', async () => {
+  const out = $('#o-read'); out.hidden = false;
+  const id = postId($('#f-url').value);
+  if (!id){
+    out.innerHTML = 'That does not look like a post URL or id. Paste a full x.com link, or the numeric id on its own.';
+    $('#rk-src').textContent = 'bad input'; return;
+  }
+  out.textContent = 'Reading from X…'; $('#rk-src').textContent = 'reading';
+  try {
+    const r = await fetch('/api/tweet?id=' + encodeURIComponent(id)).then(r => r.json());
+    $('#rk-src').textContent = r.src || 'none';
+    if (!r.exists){
+      out.innerHTML = 'X did not return that post. It may be deleted, private, or never have existed.';
+      return;
+    }
+    out.innerHTML =
+      `<div class="kv"><span>handle</span><b>@${esc(r.handle || '—')}</b></div>` +
+      `<div class="kv"><span>views</span><b>${r.views == null ? '— (this source does not report views)' : r.views.toLocaleString('en-US')}</b></div>` +
+      `<div class="kv"><span>likes / reposts / replies</span><b>${r.likes ?? '—'} / ${r.reposts ?? '—'} / ${r.replies ?? '—'}</b></div>` +
+      `<div class="kv"><span>posted</span><b>${esc(r.created || '—')}</b></div>` +
+      `<div class="kv"><span>read via</span><b>${esc(r.src)}</b></div>` +
+      (r.text ? `<div style="margin-top:12px;color:var(--white)">${esc(r.text).slice(0, 420)}</div>` : '');
+  } catch {
+    out.innerHTML = 'Could not reach the reader. It is either down or blocked from here.';
+    $('#rk-src').textContent = 'unreachable';
+  }
+});
+
+$('#b-handle').addEventListener('click', async () => {
+  const out = $('#o-handle'); out.hidden = false;
+  const v = $('#f-h').value.trim().replace(/^@/, '');
+  if (!/^[A-Za-z0-9_]{1,15}$/.test(v)){
+    out.innerHTML = 'That is not a valid X handle — letters, numbers and underscores, up to 15.';
+    $('#hk-src').textContent = 'bad input'; return;
+  }
+  out.textContent = 'Reading from X…'; $('#hk-src').textContent = 'reading';
+  try {
+    const r = await fetch('/api/handle?h=' + encodeURIComponent(v)).then(r => r.json());
+    $('#hk-src').textContent = r.src || 'none';
+    if (!r.exists){
+      out.innerHTML = 'X did not return that handle. It may not exist, or it may be protected.';
+      return;
+    }
+    out.innerHTML =
+      `<div class="kv"><span>handle</span><b>@${esc(r.handle)}</b></div>` +
+      `<div class="kv"><span>name</span><b>${esc(r.name || '—')}</b></div>` +
+      `<div class="kv"><span>followers</span><b>${r.followers == null ? '—' : r.followers.toLocaleString('en-US')}</b></div>` +
+      `<div class="kv"><span>read via</span><b>${esc(r.src)}</b></div>` +
+      (r.avatar ? `<img src="/api/avatar?h=${encodeURIComponent(r.handle)}" alt="" width="46" height="46" referrerpolicy="no-referrer" style="border-radius:50%;margin-top:12px;display:block">` : '');
+  } catch {
+    out.innerHTML = 'Could not reach the reader. It is either down or blocked from here.';
+    $('#hk-src').textContent = 'unreachable';
+  }
+});
+
+/* ── 08 probes ───────────────────────────────────────────────────── */
+const PROBE_MINT = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263';
+const PROBE_POST = '1519480761749016577';
+
+async function probe(){
+  const jobs = {
+    bond:   ['/api/bond?job=probe&price=100&deadline=24', r => /^[0-9a-f]{64}$/.test(r.hash || '')],
+    handle: ['/api/handle?h=elonmusk',                     r => r.exists === true],
+    tweet:  ['/api/tweet?id=' + PROBE_POST,                r => r.exists === true],
+    coin:   ['/api/coin?ca=' + PROBE_MINT + '&fee=1',      r => r.hasPair === true],
+  };
+  for (const [key, [url, ok]] of Object.entries(jobs)){
+    const row = document.querySelector(`#probe-body tr[data-p="${key}"]`);
+    if (!row) continue;
+    const cell = row.querySelector('.st');
+    cell.className = 'st wait'; cell.textContent = 'probing';
+    const t0 = performance.now();
+    try {
+      const r = await fetch(url).then(r => r.json());
+      const good = ok(r);
+      cell.className = 'st ' + (good ? 'ok' : 'bad');
+      cell.textContent = good ? 'responding' : 'reachable, no data';
+    } catch {
+      cell.className = 'st bad'; cell.textContent = 'unreachable';
+    }
+    row.querySelector('.ms').textContent = Math.round(performance.now() - t0);
+  }
+  const row = document.querySelector('#probe-body tr[data-p="avatar"]');
+  if (row){
+    const cell = row.querySelector('.st');
+    cell.className = 'st wait'; cell.textContent = 'probing';
+    const t0 = performance.now();
+    const img = new Image();
+    const done = ok => {
+      cell.className = 'st ' + (ok ? 'ok' : 'bad');
+      cell.textContent = ok ? 'responding' : 'unreachable';
+      row.querySelector('.ms').textContent = Math.round(performance.now() - t0);
+    };
+    img.onload = () => done(true);
+    img.onerror = () => done(false);
+    img.referrerPolicy = 'no-referrer';
+    img.src = '/api/avatar?h=cobie&t=' + Date.now();
+  }
+}
+$('#b-probe').addEventListener('click', probe);
+probe();
+
+/* ── nav scroll-spy: in-page anchors only. Feeding querySelector a value
+   like 'docs.html' throws and takes every later script with it. ───────── */
+(function(){
+  const links = $$('nav a').filter(a => (a.getAttribute('href') || '').startsWith('#'));
+  const map = new Map();
+  links.forEach(a => { const t = document.querySelector(a.getAttribute('href')); if (t) map.set(t, a); });
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ links.forEach(l => l.classList.remove('on')); map.get(e.target)?.classList.add('on'); }
+  }), { rootMargin: '-45% 0px -50% 0px' });
+  map.forEach((_, sec) => io.observe(sec));
+})();
+
+/* ── reveals, with a sweep so an anchor jump never strands a section ── */
+(function(){
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ e.target.classList.add('vis'); io.unobserve(e.target); }
+  }), { threshold: .08 });
+  const all = $$('.rv');
+  all.forEach(el => io.observe(el));
+  const sweep = () => all.forEach(el => {
+    if (!el.classList.contains('vis') && el.getBoundingClientRect().top < innerHeight){
+      el.classList.add('vis'); io.unobserve(el);
+    }
+  });
+  addEventListener('scroll', sweep, { passive: true });
+  addEventListener('hashchange', sweep);
+})();
+</script>
+</body>
+</html>
