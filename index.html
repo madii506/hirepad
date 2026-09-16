@@ -16,15 +16,14 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#000; --ink:#fff; --mid:#9399a2; --low:#596069;
-  --rule:rgba(255,255,255,.17); --rule2:rgba(255,255,255,.075);
+  --bg:#000; --ink:#fff; --mid:#a2a8b1; --low:#5d646d;
+  --rule:rgba(255,255,255,.13); --rule2:rgba(255,255,255,.07);
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  --k:128px;
 }
 *{box-sizing:border-box}
 html{overflow-x:hidden;scroll-behavior:smooth}
 body{overflow-x:clip;margin:0;background:var(--bg);color:var(--ink);
-  font-family:var(--mono);font-size:14px;line-height:1.76;-webkit-font-smoothing:antialiased}
+  font-family:var(--mono);font-size:14.5px;line-height:1.82;-webkit-font-smoothing:antialiased}
 [hidden]{display:none!important}
 a{color:inherit}
 pre{margin:0;font-family:var(--mono)}
@@ -32,167 +31,152 @@ pre{margin:0;font-family:var(--mono)}
 .crt{position:fixed;inset:0;pointer-events:none;z-index:90;background:#000;
   animation:crt 6.4s ease-in-out infinite;will-change:opacity}
 @keyframes crt{
-  0%{opacity:.010} 11%{opacity:.056} 23%{opacity:.015} 38%{opacity:.072}
-  49%{opacity:.019} 63%{opacity:.046} 77%{opacity:.011} 88%{opacity:.038} 100%{opacity:.010}
+  0%{opacity:.010} 11%{opacity:.054} 23%{opacity:.014} 38%{opacity:.068}
+  49%{opacity:.018} 63%{opacity:.044} 77%{opacity:.010} 88%{opacity:.036} 100%{opacity:.010}
 }
-.scan{position:fixed;inset:0;pointer-events:none;z-index:89;opacity:.5;
-  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.026) 0 1px,transparent 1px 3px)}
+.scan{position:fixed;inset:0;pointer-events:none;z-index:89;opacity:.45;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.024) 0 1px,transparent 1px 3px)}
 
-/* ══ the sheet: one bordered grid, edge to edge ══════════════════════ */
-.sheet{max-width:1280px;margin:0 auto;border-left:1px solid var(--rule);
-  border-right:1px solid var(--rule)}
+/* one column, and nothing else holding the page up */
+.wrap{max-width:840px;margin:0 auto;padding-left:32px;padding-right:32px}
 
-.row{display:grid;grid-template-columns:var(--k) minmax(0,1fr);
-  border-bottom:1px solid var(--rule);scroll-margin-top:44px}
-.row>.k{border-right:1px solid var(--rule);padding:30px 0 30px 20px}
-.row>.v{padding:30px 32px;min-width:0}
-.row>.k .n{font-size:12px;color:var(--ink);display:block}
-.row>.k .t{font-size:9.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--low);
-  display:block;margin-top:6px;line-height:1.5}
-.row>.k .s{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--low);
-  display:block;margin-top:14px;padding-top:10px;border-top:1px solid var(--rule2)}
-.row.plain{grid-template-columns:1fr}
-.row.plain>.v{padding:30px 32px}
-
-/* ── the headline cell ────────────────────────────────────────────── */
-.hero{padding:44px 32px 38px;border-bottom:1px solid var(--rule);text-align:center}
+/* ── masthead ─────────────────────────────────────────────────────── */
+.hero{padding-top:76px;padding-bottom:64px;text-align:center}
 #art{display:inline-block;white-space:pre;line-height:1.02;letter-spacing:.055em;
-  font-size:clamp(3.2px,.83vw,10.5px);color:var(--ink);
-  text-shadow:0 0 11px rgba(255,255,255,.24);min-height:132px}
-.hero .say{margin:26px auto 0;font-size:clamp(16px,2vw,21px);line-height:1.55;
-  max-width:34ch;font-weight:500;letter-spacing:-.01em}
+  font-size:clamp(3.1px,.78vw,9.4px);color:var(--ink);
+  text-shadow:0 0 12px rgba(255,255,255,.22);min-height:120px}
+.hero .say{margin:34px auto 0;font-size:clamp(19px,2.7vw,29px);line-height:1.46;
+  max-width:19ch;font-weight:600;letter-spacing:-.022em}
 .hero .say em{font-style:italic;font-weight:400;color:var(--mid)}
-.hero .sub{margin:18px auto 0;color:var(--mid);font-size:13px;max-width:62ch}
+.hero .sub{margin:22px auto 0;color:var(--mid);font-size:14px;max-width:56ch;line-height:1.75}
+.hero .where{margin:28px auto 0;color:var(--low);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase}
 
-/* ── the spec strip ───────────────────────────────────────────────── */
-.spec{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--rule)}
-.spec div{padding:14px 16px;border-right:1px solid var(--rule2);min-width:0}
-.spec div:last-child{border-right:0}
-.spec span{display:block;font-size:9px;letter-spacing:.17em;color:var(--low);
-  text-transform:uppercase;margin-bottom:4px}
-.spec b{font-size:12.5px;font-weight:500;word-break:break-word}
+/* ── contents: one quiet line, not a strip of cells ───────────────── */
+.toc{padding-top:24px;padding-bottom:24px;border-top:1px solid var(--rule2)}
+.toc .wrap{max-width:1060px}
+.toc .in{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 0;
+  font-size:11.5px;color:var(--low)}
+.toc a{text-decoration:none;color:var(--low);padding:2px 11px;transition:.14s;white-space:nowrap}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:var(--ink)}
+.toc i{font-style:normal;color:var(--rule);user-select:none}
 
-/* ── the index strip ──────────────────────────────────────────────── */
-.jump{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--rule);
-  position:sticky;top:0;z-index:50;background:rgba(0,0,0,.94);backdrop-filter:blur(8px)}
-.jump a{flex:1 1 auto;text-align:center;padding:10px 12px;font-size:11px;color:var(--low);
-  text-decoration:none;border-right:1px solid var(--rule2);transition:.14s;white-space:nowrap}
-.jump a:last-child{border-right:0}
-.jump a:hover{color:var(--ink)}
-.jump a.on{color:#000;background:var(--ink);font-weight:600}
-
-/* ── content inside a cell ────────────────────────────────────────── */
-.v h2{font-size:20px;font-weight:600;margin:0 0 16px;letter-spacing:-.014em}
-.v p{color:var(--mid);margin:0 0 14px;max-width:74ch;font-size:13.5px}
-.v p:last-child{margin-bottom:0}
-.v p b,.v li b,dd b,td b{color:var(--ink);font-weight:600}
-h3{font-size:13.5px;font-weight:600;margin:30px 0 10px;scroll-margin-top:60px;
-  display:flex;align-items:baseline;gap:12px}
-h3 em{font-style:normal;color:var(--low);font-size:11.5px;font-weight:400}
-code{border:1px solid var(--rule2);padding:1px 5px;font-size:12.5px;color:var(--ink)}
+/* ── sections: whitespace does the separating ─────────────────────── */
+.sec{padding-top:80px;padding-bottom:80px;border-top:1px solid var(--rule2);
+  scroll-margin-top:8px}
+.eyebrow{display:flex;align-items:baseline;gap:16px;margin:0 0 20px;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--low)}
+.eyebrow b{color:var(--ink);font-weight:600;letter-spacing:.1em}
+.eyebrow span{flex:0 0 auto}
+.eyebrow i{flex:1;height:1px;background:var(--rule2);display:block}
+h2{font-size:clamp(21px,3vw,29px);font-weight:600;margin:0 0 26px;
+  letter-spacing:-.024em;line-height:1.3;max-width:26ch}
+.sec p{color:var(--mid);margin:0 0 17px;max-width:68ch;font-size:14.5px}
+.sec p:last-child{margin-bottom:0}
+.sec p b,.sec li b,dd b,td b{color:var(--ink);font-weight:600}
+h3{font-size:15px;font-weight:600;margin:44px 0 14px;scroll-margin-top:16px;
+  display:flex;align-items:baseline;gap:14px;color:var(--ink)}
+h3 em{font-style:normal;color:var(--low);font-size:11px;font-weight:400;letter-spacing:.14em}
+code{border:1px solid var(--rule2);padding:1px 5px;font-size:13px;color:var(--ink)}
 a.lnk{color:var(--ink);text-underline-offset:3px}
 
-.sch{border:1px solid var(--rule);margin:22px 0}
+/* ── schedules ────────────────────────────────────────────────────── */
+.sch{border:1px solid var(--rule);margin:30px 0}
 .sch>.hd{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
-  padding:11px 16px;border-bottom:1px solid var(--rule);font-size:10px;
-  letter-spacing:.17em;text-transform:uppercase;color:var(--low)}
-.sch>.hd b{color:var(--ink);font-weight:600;letter-spacing:.17em}
-.sch>.bd{padding:16px}
-.sch p{font-size:13px;max-width:none}
+  padding:12px 18px;border-bottom:1px solid var(--rule);font-size:10px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--low)}
+.sch>.hd b{color:var(--ink);font-weight:600;letter-spacing:.18em}
+.sch>.bd{padding:18px}
+.sch p{font-size:13.5px;max-width:none}
 
-label{display:block;font-size:9.5px;letter-spacing:.16em;color:var(--low);
-  text-transform:uppercase;margin:0 0 6px}
-input[type=text],input[type=number],textarea{width:100%;padding:9px 11px;border-radius:0;
+label{display:block;font-size:9.5px;letter-spacing:.17em;color:var(--low);
+  text-transform:uppercase;margin:0 0 7px}
+input[type=text],input[type=number],textarea{width:100%;padding:10px 12px;border-radius:0;
   border:1px solid var(--rule);background:#000;color:var(--ink);
-  font-family:var(--mono);font-size:13px;line-height:1.6}
-textarea{resize:vertical;min-height:66px}
+  font-family:var(--mono);font-size:13.5px;line-height:1.6}
+textarea{resize:vertical;min-height:70px}
 input::placeholder,textarea::placeholder{color:var(--low)}
 input:focus,textarea:focus{outline:none;border-color:var(--ink)}
-.f{margin-bottom:13px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
-.btn{display:inline-block;padding:8px 15px;font-size:12.5px;font-family:var(--mono);
+.f{margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.btn{display:inline-block;padding:9px 16px;font-size:12.5px;font-family:var(--mono);
   text-decoration:none;cursor:pointer;border:1px solid var(--rule);background:transparent;
   color:var(--ink);transition:.14s;border-radius:0}
 .btn:hover{border-color:var(--ink)}
 .btn.on{background:var(--ink);color:#000;border-color:var(--ink);font-weight:600}
-.bar2{display:flex;gap:9px;flex-wrap:wrap}
+.bar2{display:flex;gap:10px;flex-wrap:wrap}
 
-.kv{display:grid;grid-template-columns:1fr auto;gap:12px;padding:8px 0;
-  border-bottom:1px solid var(--rule2);font-size:13px;align-items:baseline}
+.kv{display:grid;grid-template-columns:1fr auto;gap:14px;padding:9px 0;
+  border-bottom:1px solid var(--rule2);font-size:13.5px;align-items:baseline}
 .kv:last-child{border-bottom:0}
 .kv>span{color:var(--low)}
 .kv>b{font-weight:600;text-align:right}
-.blk{border:1px solid var(--rule2);padding:11px 12px;font-size:12px;
+.blk{border:1px solid var(--rule2);padding:12px 13px;font-size:12.5px;
   white-space:pre-wrap;word-break:break-word;color:var(--mid);margin:0}
-.hash{word-break:break-all;font-size:12.5px;color:var(--ink);line-height:1.6}
-.lab{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--low);
-  margin:14px 0 6px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;padding:1px 7px;
+.hash{word-break:break-all;font-size:13px;color:var(--ink);line-height:1.6}
+.lab{font-size:9.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--low);
+  margin:16px 0 7px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tag{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;padding:2px 8px;
   border:1px solid var(--rule);color:var(--low);white-space:nowrap}
 .tag.on{background:var(--ink);color:#000;border-color:var(--ink);font-weight:600}
-.out{margin-top:12px;border-top:1px solid var(--rule2);padding-top:12px;
-  font-size:12.5px;color:var(--mid);word-break:break-word}
+.out{margin-top:14px;border-top:1px solid var(--rule2);padding-top:14px;
+  font-size:13px;color:var(--mid);word-break:break-word}
 .out b{color:var(--ink)}
 
-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:6px 0}
-th{text-align:left;color:var(--low);font-weight:500;font-size:9.5px;letter-spacing:.15em;
-  text-transform:uppercase;padding:10px 0;border-bottom:1px solid var(--rule)}
-td{padding:10px 0;border-bottom:1px solid var(--rule2);color:var(--mid);vertical-align:top}
-td+td,th+th{padding-left:20px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+th{text-align:left;color:var(--low);font-weight:500;font-size:9.5px;letter-spacing:.17em;
+  text-transform:uppercase;padding:11px 0;border-bottom:1px solid var(--rule)}
+td{padding:13px 0;border-bottom:1px solid var(--rule2);color:var(--mid);vertical-align:top}
+td+td,th+th{padding-left:24px}
 tr:last-child td{border-bottom:0}
 td.nw{white-space:nowrap}
 .st.ok{color:var(--ink)} .st.bad{color:var(--mid)} .st.wait{color:var(--low)}
 .st.bad::before{content:"! ";color:var(--ink)}
 
-dl{margin:0;border-top:1px solid var(--rule2)}
-dt{color:var(--ink);font-weight:600;font-size:13px;padding:13px 0 2px}
-dd{margin:0;color:var(--mid);font-size:13px;border-bottom:1px solid var(--rule2);
-  padding-bottom:13px;max-width:74ch}
+dl{margin:14px 0 0;border-top:1px solid var(--rule2)}
+dt{color:var(--ink);font-weight:600;font-size:14px;padding:16px 0 3px}
+dd{margin:0;color:var(--mid);font-size:13.5px;border-bottom:1px solid var(--rule2);
+  padding-bottom:16px;max-width:68ch}
 dd:last-child{border-bottom:0}
 
-ul.l{margin:0 0 14px;padding:0;list-style:none}
-ul.l li{color:var(--mid);font-size:13px;padding:8px 0 8px 18px;position:relative;
+ul.l{margin:14px 0 0;padding:0;list-style:none}
+ul.l li{color:var(--mid);font-size:13.5px;padding:11px 0 11px 22px;position:relative;
   border-bottom:1px solid var(--rule2)}
 ul.l li:last-child{border-bottom:0}
 ul.l li::before{content:"—";position:absolute;left:0;color:var(--low)}
 
-.mark{border-left:1px solid var(--ink);padding:2px 0 2px 16px;margin:20px 0}
-.mark p{margin:0;color:var(--mid);font-size:13px}
-.mark .t{color:var(--ink);font-size:9.5px;letter-spacing:.17em;text-transform:uppercase;
-  display:block;margin-bottom:6px}
-.code{border:1px solid var(--rule2);padding:14px 15px;overflow-x:auto;white-space:pre;
-  font-size:12.5px;line-height:1.7;color:var(--mid);margin:18px 0}
+.mark{border-left:1px solid var(--ink);padding:4px 0 4px 20px;margin:28px 0}
+.mark p{margin:0;color:var(--mid);font-size:13.5px}
+.mark .t{color:var(--ink);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  display:block;margin-bottom:8px}
+.code{border:1px solid var(--rule2);padding:16px 17px;overflow-x:auto;white-space:pre;
+  font-size:12.5px;line-height:1.75;color:var(--mid);margin:24px 0}
 .code .c{color:var(--low)} .code .k2{color:var(--ink)}
 
-.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+.end{padding-top:34px;padding-bottom:90px;border-top:1px solid var(--rule2)}
+.end .in{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
   color:var(--low);font-size:11.5px}
-.foot a{color:var(--mid);text-underline-offset:3px}
+.end a{color:var(--mid);text-underline-offset:3px}
 
-.rv{opacity:0;transform:translateY(8px);transition:opacity .42s ease,transform .42s ease}
+.rv{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
 .rv.vis{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
   .rv{opacity:1;transform:none;transition:none} .crt{animation:none;opacity:0}
   #art{text-shadow:none}
 }
-@media(max-width:900px){
-  .spec{grid-template-columns:repeat(3,1fr)}
-  .spec div:nth-child(3){border-right:0}
-  .spec div:nth-child(-n+3){border-bottom:1px solid var(--rule2)}
-}
-@media(max-width:760px){
-  .row{grid-template-columns:1fr}
-  .row>.k{border-right:0;border-bottom:1px solid var(--rule2);
-    padding:16px 18px;display:flex;align-items:baseline;gap:12px}
-  .row>.k .t{margin-top:0} .row>.k .s{display:none}
-  .row>.v{padding:24px 18px}
-  .row.plain>.v{padding:24px 18px}
-  .hero{padding:32px 18px 28px}
+@media(max-width:640px){
+  .wrap{padding-left:20px;padding-right:20px}
+  .hero{padding-top:48px;padding-bottom:44px}
+  .sec{padding-top:56px;padding-bottom:56px}
+  .end{padding-bottom:64px}
   .g2,.g3{grid-template-columns:1fr}
-  td+td,th+th{padding-left:12px}
-  table{font-size:11.5px}
-  .jump{overflow-x:auto;flex-wrap:nowrap}
-  .jump a{flex:0 0 auto}
+  td+td,th+th{padding-left:14px}
+  table{font-size:12px}
+  .toc .in{justify-content:flex-start}
+  .toc a{padding:2px 9px 2px 0}
+  .toc i{display:none}
 }
 </style>
 </head>
@@ -200,41 +184,37 @@ ul.l li::before{content:"—";position:absolute;left:0;color:var(--low)}
 <div class="crt" aria-hidden="true"></div>
 <div class="scan" aria-hidden="true"></div>
 
-<div class="sheet">
-
-  <header class="hero">
+<header class="hero">
+  <div class="wrap">
     <pre id="art" aria-label="HIRE">computing…</pre>
     <p class="say">It works. It bonds every job. <em>If it fails, it pays you.</em></p>
     <p class="sub">You pay it to do a job. Before it starts it stakes the same amount of its own
       money against finishing. Miss the deadline and that money is yours.</p>
-  </header>
-
-  <div class="spec">
-    <div><span>Venue</span><b>pump.fun</b></div>
-    <div><span>Chain</span><b>Solana</b></div>
-    <div><span>Rail</span><b>X Money</b></div>
-    <div><span>Commitment</span><b>sha256(utf8)</b></div>
-    <div><span>Bond ratio</span><b>1 : 1</b></div>
-    <div><span>Deployed</span><b>no</b></div>
+    <p class="where">Solana &nbsp;·&nbsp; pump.fun &nbsp;·&nbsp; paid through X Money</p>
   </div>
+</header>
 
-  <nav class="jump" id="jump">
-    <a href="#s1">01 agreement</a>
-    <a href="#s2">02 terms</a>
-    <a href="#s3">03 commitment</a>
-    <a href="#s4">04 bond</a>
-    <a href="#s5">05 ceiling</a>
-    <a href="#s6">06 settlement</a>
-    <a href="#s7">07 program</a>
-    <a href="#s8">08 readers</a>
-    <a href="#s9">09 not yet true</a>
-  </nav>
+<nav class="toc" id="toc">
+  <div class="wrap">
+    <div class="in">
+      <a href="#s1">01 agreement</a><i>/</i>
+      <a href="#s2">02 terms</a><i>/</i>
+      <a href="#s3">03 commitment</a><i>/</i>
+      <a href="#s4">04 bond</a><i>/</i>
+      <a href="#s5">05 ceiling</a><i>/</i>
+      <a href="#s6">06 settlement</a><i>/</i>
+      <a href="#s7">07 program</a><i>/</i>
+      <a href="#s8">08 readers</a><i>/</i>
+      <a href="#s9">09 status</a>
+    </div>
+  </div>
+</nav>
 
-  <!-- 01 -->
-  <section class="row rv" id="s1">
-    <div class="k"><span class="n">01</span><span class="t">The agreement</span>
-      <span class="s">read first</span></div>
-    <div class="v">
+<main>
+
+  <section class="sec rv" id="s1">
+    <div class="wrap">
+      <p class="eyebrow"><b>01</b><span>The agreement</span><i></i></p>
       <h2>It puts its own money up. Every time.</h2>
       <p>You pay HIRE to do a job. Before it starts, it stakes an equal amount of its own money
         against finishing — a <b>bond</b>, opened onchain, against a hash of the exact terms and a
@@ -247,17 +227,15 @@ ul.l li::before{content:"—";position:absolute;left:0;color:var(--low)}
       <div class="mark">
         <span class="t">What is not being claimed</span>
         <p>Nobody grades the work. The bond settles on whether proof was filed before the deadline,
-          which is a fact — not on whether anyone was pleased, which is an argument. 06 explains
-          why, and 09 says what that costs you.</p>
+          which is a fact — not on whether anyone was pleased, which is an argument. Section 06
+          explains why, and 09 says what that costs you.</p>
       </div>
     </div>
   </section>
 
-  <!-- 02 -->
-  <section class="row rv" id="s2">
-    <div class="k"><span class="n">02</span><span class="t">Terms</span>
-      <span class="s">seven words</span></div>
-    <div class="v">
+  <section class="sec rv" id="s2">
+    <div class="wrap">
+      <p class="eyebrow"><b>02</b><span>Terms</span><i></i></p>
       <h2>Words used in a specific way</h2>
       <p>Where these appear anywhere on this site, they mean exactly this and nothing looser.</p>
       <dl>
@@ -286,11 +264,9 @@ ul.l li::before{content:"—";position:absolute;left:0;color:var(--low)}
     </div>
   </section>
 
-  <!-- 03 -->
-  <section class="row rv" id="s3">
-    <div class="k"><span class="n">03</span><span class="t">The commitment</span>
-      <span class="s">schedule A</span></div>
-    <div class="v">
+  <section class="sec rv" id="s3">
+    <div class="wrap">
+      <p class="eyebrow"><b>03</b><span>The commitment</span><i></i></p>
       <h2>How a job becomes a hash</h2>
       <p>Before work begins, the terms are folded into one canonical string and hashed. That string
         is byte-exact and is the only thing ever hashed.</p>
@@ -340,7 +316,7 @@ job_hash = sha256(utf8(canonical))</div>
           <div class="lab"><span>sha-256 — on the server</span><span class="tag" id="A-ts">not checked</span></div>
           <div class="hash" id="A-hs">—</div>
 
-          <div style="margin-top:14px">
+          <div style="margin-top:16px">
             <div class="kv"><span>agreement</span><b id="A-match">—</b></div>
             <div class="kv"><span>price / bond</span><b id="A-amt">—</b></div>
             <div class="kv"><span>if it fails, you receive</span><b id="A-fail">—</b></div>
@@ -357,11 +333,9 @@ job_hash = sha256(utf8(canonical))</div>
     </div>
   </section>
 
-  <!-- 04 -->
-  <section class="row rv" id="s4">
-    <div class="k"><span class="n">04</span><span class="t">The bond</span>
-      <span class="s">1 : 1</span></div>
-    <div class="v">
+  <section class="sec rv" id="s4">
+    <div class="wrap">
+      <p class="eyebrow"><b>04</b><span>The bond</span><i></i></p>
       <h2>Failing costs exactly what delivering pays</h2>
       <p>The bond is set equal to the price. That single choice does most of the work.</p>
       <table>
@@ -371,7 +345,7 @@ job_hash = sha256(utf8(canonical))</div>
           <tr><td class="nw"><b>failed</b></td><td>loses the bond, refunds the fee</td><td>your fee back, plus the bond on top</td></tr>
         </tbody>
       </table>
-      <p style="margin-top:18px">So the swing between delivering and failing is <b>twice the
+      <p style="margin-top:22px">So the swing between delivering and failing is <b>twice the
         price</b>, and it is symmetric — the agent's downside is exactly your upside. A smaller bond
         would make failure cheap. A larger one would make it refuse work it could easily do. Equal
         is the point where taking a job it cannot finish is never rational.</p>
@@ -383,11 +357,9 @@ job_hash = sha256(utf8(canonical))</div>
     </div>
   </section>
 
-  <!-- 05 -->
-  <section class="row rv" id="s5">
-    <div class="k"><span class="n">05</span><span class="t">The ceiling</span>
-      <span class="s">schedule B</span></div>
-    <div class="v">
+  <section class="sec rv" id="s5">
+    <div class="wrap">
+      <p class="eyebrow"><b>05</b><span>The ceiling</span><i></i></p>
       <h2>The biggest job it can take is the size of its own wallet</h2>
       <p>Because the bond must be covered, the largest job the agent can accept equals its balance.
         Its wallet is not a treasury — it is a limit.</p>
@@ -417,7 +389,7 @@ ruin_at(p)   = floor(balance / p)   <span class="c"># consecutive failures at pr
           <div class="kv"><span>balance if it delivers</span><b id="B-win">—</b></div>
           <div class="kv"><span>balance if it fails</span><b id="B-lose">—</b></div>
           <div class="kv"><span>consecutive failures until it cannot work at all</span><b id="B-ruin">—</b></div>
-          <pre class="blk" id="B-bar" style="margin-top:13px">enter a balance and a job</pre>
+          <pre class="blk" id="B-bar" style="margin-top:14px">enter a balance and a job</pre>
         </div>
       </div>
       <p>The wallet will be funded by the creator fee on $HIRE. Trading volume does exactly one
@@ -426,11 +398,9 @@ ruin_at(p)   = floor(balance / p)   <span class="c"># consecutive failures at pr
     </div>
   </section>
 
-  <!-- 06 -->
-  <section class="row rv" id="s6">
-    <div class="k"><span class="n">06</span><span class="t">Settlement</span>
-      <span class="s">and failure</span></div>
-    <div class="v">
+  <section class="sec rv" id="s6">
+    <div class="wrap">
+      <p class="eyebrow"><b>06</b><span>Settlement</span><i></i></p>
       <h2>Decided by a deadline, never by an opinion</h2>
       <p>Four steps, in this order. The ordering is the security property: every commitment is made
         before the thing it constrains happens.</p>
@@ -478,11 +448,9 @@ ruin_at(p)   = floor(balance / p)   <span class="c"># consecutive failures at pr
     </div>
   </section>
 
-  <!-- 07 -->
-  <section class="row rv" id="s7">
-    <div class="k"><span class="n">07</span><span class="t">The program</span>
-      <span class="s">not deployed</span></div>
-    <div class="v">
+  <section class="sec rv" id="s7">
+    <div class="wrap">
+      <p class="eyebrow"><b>07</b><span>The program</span><i></i></p>
       <h2>Four accounts. Six instructions.</h2>
       <p>Deliberately small. Its job is not to run the agent — it is to hold the commitments that
         make the agent's behaviour checkable from outside.</p>
@@ -524,11 +492,9 @@ it is losing.</span></div>
     </div>
   </section>
 
-  <!-- 08 -->
-  <section class="row rv" id="s8">
-    <div class="k"><span class="n">08</span><span class="t">The readers</span>
-      <span class="s">schedule C</span></div>
-    <div class="v">
+  <section class="sec rv" id="s8">
+    <div class="wrap">
+      <p class="eyebrow"><b>08</b><span>The readers</span><i></i></p>
       <h2>Pointed at anything you like</h2>
       <p>Jobs are agreed in public threads, so the agent has to read X. Five endpoints, no database,
         nothing that writes. They work on any public post or handle — not only ones involving this
@@ -567,18 +533,16 @@ it is losing.</span></div>
           <tr data-p="coin"><td class="nw"><b>/api/coin</b></td><td>a live solana mint</td><td class="st">—</td><td class="ms">—</td></tr>
         </tbody>
       </table>
-      <p style="margin-top:16px"><button class="btn" id="b-probe">re-run probes</button></p>
+      <p style="margin-top:20px"><button class="btn" id="b-probe">re-run probes</button></p>
       <p>Only FxTwitter can carry a view count, and not for every post. Either way
         <code>views</code> returns <code>null</code> and never <code>0</code>. Full parameters and
         response shapes are in the <a class="lnk" href="docs.html">reference</a>.</p>
     </div>
   </section>
 
-  <!-- 09 -->
-  <section class="row rv" id="s9">
-    <div class="k"><span class="n">09</span><span class="t">Not yet true</span>
-      <span class="s">read this one</span></div>
-    <div class="v">
+  <section class="sec rv" id="s9">
+    <div class="wrap">
+      <p class="eyebrow"><b>09</b><span>Status</span><i></i></p>
       <h2>What is not verifiable today</h2>
       <p>The rules above describe intended behaviour, not observed behaviour. No bond has ever been
         opened, so there is nothing on chain to check them against.</p>
@@ -621,7 +585,7 @@ it is losing.</span></div>
           <tr><td><b>cannot hide a failure</b></td><td>the failed count is on the Mark account and is never decremented.</td></tr>
         </tbody>
       </table>
-      <p style="margin-top:16px">Narrowing this role is the main engineering work ahead. It will
+      <p style="margin-top:20px">Narrowing this role is the main engineering work ahead. It will
         not be described as gone before it is gone.</p>
 
       <h3 id="s9-3"><em>09.3</em>Before there is an address</h3>
@@ -636,14 +600,16 @@ it is losing.</span></div>
     </div>
   </section>
 
-  <div class="row plain">
-    <div class="v foot">
+</main>
+
+<footer class="end">
+  <div class="wrap">
+    <div class="in">
       <span>HIRE — bond instrument, version 0.1</span>
       <a href="docs.html">Reference &amp; API &rarr;</a>
     </div>
   </div>
-
-</div>
+</footer>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -906,7 +872,7 @@ $('#b-read').addEventListener('click', async () => {
       `<div class="kv"><span>views</span><b>${r.views == null ? '— (source has none)' : r.views.toLocaleString('en-US')}</b></div>` +
       `<div class="kv"><span>posted</span><b>${esc(r.created || '—')}</b></div>` +
       `<div class="kv"><span>read via</span><b>${esc(r.src)}</b></div>` +
-      (r.text ? `<div style="margin-top:10px;color:#fff">${esc(r.text).slice(0, 320)}</div>` : '');
+      (r.text ? `<div style="margin-top:12px;color:#fff">${esc(r.text).slice(0, 320)}</div>` : '');
   } catch {
     out.textContent = 'Could not reach the reader.'; $('#C-state').textContent = 'unreachable';
   }
@@ -978,24 +944,23 @@ async function probe(){
 $('#b-probe').addEventListener('click', probe);
 probe();
 
-/* ── the jump strip tracks where you are. Only in-page anchors go into
+/* ── contents tracks where you are. Only in-page anchors reach
    querySelector — handing it 'docs.html' throws and takes every later
    script with it. ──────────────────────────────────────────────────── */
 (function(){
-  const links = $$('#jump a').filter(a => (a.getAttribute('href') || '').startsWith('#'));
+  const links = $$('#toc a').filter(a => (a.getAttribute('href') || '').startsWith('#'));
   const map = new Map();
   links.forEach(a => { const t = document.querySelector(a.getAttribute('href')); if (t) map.set(t, a); });
   const io = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting){
       links.forEach(l => l.classList.remove('on'));
-      const a = map.get(e.target);
-      if (a){ a.classList.add('on'); a.scrollIntoView({block:'nearest', inline:'nearest'}); }
+      map.get(e.target)?.classList.add('on');
     }
-  }), { rootMargin: '-15% 0px -70% 0px' });
+  }), { rootMargin: '-12% 0px -72% 0px' });
   map.forEach((_, sec) => io.observe(sec));
 })();
 
-/* ── reveals, with a sweep so a jump never strands a row ───────────── */
+/* ── reveals, with a sweep so a jump never strands a section ───────── */
 (function(){
   const io = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting){ e.target.classList.add('vis'); io.unobserve(e.target); }

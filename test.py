@@ -81,13 +81,13 @@ async def main():
                 bad.append(f'{label}: scam warning missing')
 
             if label == 'phone':
-                if not await pg.is_visible('#jump a'):
-                    bad.append('phone: jump strip is not visible')
-                g = await pg.evaluate('''()=>[...document.querySelectorAll('.row > .v, .hero')]
-                    .map(e=>e.tagName+'.'+e.className+':'+getComputedStyle(e).paddingLeft)
-                    .filter(s=>s.endsWith(':0px'))''')
+                if not await pg.is_visible('#toc a'):
+                    bad.append('phone: contents is not visible')
+                g = await pg.evaluate('''()=>[...document.querySelectorAll('.wrap')]
+                    .map(e=>getComputedStyle(e).paddingLeft)
+                    .filter(s=>s!=='20px')''')
                 if g:
-                    bad.append(f'phone: cells lost their padding: {g[:4]}')
+                    bad.append(f'phone: .wrap blocks lost their gutter: {g[:4]}')
                 await pg.screenshot(path='/tmp/hire-phone.png', full_page=True)
                 errs = [e for e in errs if 'favicon' not in e.lower() and 'fonts.g' not in e
                         and 'ERR_' not in e and '404' not in e]
@@ -98,11 +98,12 @@ async def main():
 
             # ── every .col block keeps its gutter. A `padding` shorthand on
             # .top/.toc/.cl silently resets .col's horizontal padding to 0. ──
-            gutters = await pg.evaluate('''()=>[...document.querySelectorAll('.row > .v, .hero')]
-                .map(e=>e.tagName+'.'+e.className+':'+getComputedStyle(e).paddingLeft)
-                .filter(s=>s.endsWith(':0px'))''')
+            gutters = await pg.evaluate('''()=>[...document.querySelectorAll('.wrap')]
+                .map(e=>e.parentElement.tagName+'.'+e.parentElement.className
+                        +':'+getComputedStyle(e).paddingLeft)
+                .filter(s=>!s.endsWith(':32px'))''')
             if gutters:
-                bad.append(f'cells lost their padding: {gutters[:4]}')
+                bad.append(f'.wrap blocks lost their gutter: {gutters[:4]}')
 
             # ── black and white only ─────────────────────────────────────
             bg = await pg.evaluate("getComputedStyle(document.body).backgroundColor")
@@ -122,29 +123,33 @@ async def main():
                 bad.append(f'non-greyscale colour found: {tinted}')
 
             # ── clause structure, not the old band template ──────────────
-            nos = await pg.eval_on_selector_all('.row > .k > .n', 'e=>e.map(x=>x.textContent.trim())')
+            nos = await pg.eval_on_selector_all('.sec > .wrap > .eyebrow > b',
+                                                'e=>e.map(x=>x.textContent.trim())')
             want = ['%02d' % i for i in range(1, 10)]
             if nos != want:
-                bad.append(f'row numbering is {nos}')
-            if await pg.evaluate("getComputedStyle(document.querySelector('#jump')).position") != 'sticky':
-                bad.append('the jump strip is not sticky')
-            idx = await pg.eval_on_selector_all('#jump a', 'e=>e.length')
+                bad.append(f'section numbering is {nos}')
+            # the removed spec bar must stay gone
+            if await pg.query_selector('.spec'):
+                bad.append('the spec bar is back')
+            idx = await pg.eval_on_selector_all('#toc a', 'e=>e.length')
             if idx != 9:
-                bad.append(f'jump strip lists {idx} sections, expected 9')
-            # the jump strip highlights the section you are in, and jumping
-            # must not tuck the heading underneath that strip
-            await pg.evaluate("location.hash=''; document.querySelector('#s5').scrollIntoView()")
-            await pg.wait_for_timeout(700)
-            clipped = await pg.evaluate('''()=>{
-                const strip=document.querySelector('#jump').getBoundingClientRect();
-                const h=document.querySelector('#s5 h2').getBoundingClientRect();
-                return h.top < strip.bottom ? Math.round(strip.bottom-h.top) : 0;
+                bad.append(f'contents lists {idx} sections, expected 9')
+            lines = await pg.evaluate('''()=>{
+                const ys = new Set([...document.querySelectorAll('#toc a')]
+                    .map(a=>Math.round(a.getBoundingClientRect().top)));
+                return ys.size;
             }''')
-            if clipped:
-                bad.append(f'jumping hides the heading {clipped}px under the sticky strip')
-            on = await pg.eval_on_selector_all('#jump a.on', 'e=>e.map(x=>x.textContent.trim())')
+            if lines != 1:
+                bad.append(f'contents wraps onto {lines} lines at 1400px')
+            # contents marks the section you are in, and jumping lands cleanly
+            await pg.evaluate("document.querySelector('#s5').scrollIntoView()")
+            await pg.wait_for_timeout(700)
+            on = await pg.eval_on_selector_all('#toc a.on', 'e=>e.map(x=>x.textContent.trim())')
             if len(on) != 1:
-                bad.append(f'jump strip highlights {len(on)} entries, expected 1')
+                bad.append(f'contents marks {len(on)} entries, expected 1')
+            top = await pg.evaluate("document.querySelector('#s5 h2').getBoundingClientRect().top")
+            if top < 0:
+                bad.append(f'jumping puts the heading {abs(round(top))}px above the viewport')
             await pg.evaluate('window.scrollTo(0,0)')
             await pg.wait_for_timeout(500)
 
