@@ -68,6 +68,9 @@ async def main():
 
             # the old dashboard template must be gone
             txt = (await pg.inner_text('body')).lower()
+            # the hero straplines were removed; they must not creep back
+            if await pg.query_selector('.hero .say') or await pg.query_selector('.hero .sub'):
+                bad.append(f'{label}: a hero strapline is back')
             for phrase in ('jobs delivered', 'bonds forfeited', 'claims required',
                            'no jobs have been taken yet', '0 jobs', 'paid out total',
                            'no bond has been opened.'):
