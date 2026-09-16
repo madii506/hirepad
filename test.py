@@ -64,7 +64,8 @@ async def main():
             # the old dashboard template must be gone
             txt = (await pg.inner_text('body')).lower()
             for phrase in ('jobs delivered', 'bonds forfeited', 'claims required',
-                           'no jobs have been taken yet', '0 jobs', 'paid out total'):
+                           'no jobs have been taken yet', '0 jobs', 'paid out total',
+                           'no bond has been opened.'):
                 if phrase in txt:
                     bad.append(f'{label}: invented dashboard figure survives -> {phrase!r}')
             # word-bounded: 'pons' is a substring of 'response'
@@ -75,9 +76,13 @@ async def main():
                 bad.append(f'{label}: scam warning missing')
 
             if label == 'phone':
-                await pg.click('#rb'); await pg.wait_for_timeout(250)
-                if not await pg.is_visible('#idx a'):
-                    bad.append('phone: contents did not open')
+                if not await pg.is_visible('#toc ol a'):
+                    bad.append('phone: contents list is not visible')
+                g = await pg.evaluate('''()=>[...document.querySelectorAll('.col')]
+                    .map(e=>e.tagName+'.'+e.className+':'+getComputedStyle(e).paddingLeft)
+                    .filter(s=>!s.endsWith(':18px'))''')
+                if g:
+                    bad.append(f'phone: .col blocks lost their gutter: {g[:4]}')
                 await pg.screenshot(path='/tmp/hire-phone.png', full_page=True)
                 errs = [e for e in errs if 'favicon' not in e.lower() and 'fonts.g' not in e
                         and 'ERR_' not in e and '404' not in e]
@@ -85,6 +90,15 @@ async def main():
                     bad.append(f'{label} console: ' + ' | '.join(errs[:5]))
                 await pg.close()
                 continue
+
+            # ── every .col block keeps its gutter. A `padding` shorthand on
+            # .top/.toc/.cl silently resets .col's horizontal padding to 0. ──
+            gutters = await pg.evaluate('''()=>[...document.querySelectorAll('.col')]
+                .map(e=>e.tagName+'.'+e.className+':'+getComputedStyle(e).paddingLeft
+                     +'/'+getComputedStyle(e).paddingRight)
+                .filter(s=>!s.endsWith('28px/28px'))''')
+            if gutters:
+                bad.append(f'.col blocks lost their gutter: {gutters[:4]}')
 
             # ── black and white only ─────────────────────────────────────
             bg = await pg.evaluate("getComputedStyle(document.body).backgroundColor")
@@ -105,14 +119,24 @@ async def main():
 
             # ── clause structure, not the old band template ──────────────
             nos = await pg.eval_on_selector_all('.cl > .ch > .no', 'e=>e.map(x=>x.textContent.trim())')
-            want = ['§' + str(i) for i in range(1, 13)]
+            want = ['§' + str(i) for i in range(1, 10)]
             if nos != want:
                 bad.append(f'clause numbering is {nos}')
-            idx = await pg.eval_on_selector_all('#idx a', 'e=>e.length')
-            if idx != 12:
-                bad.append(f'contents lists {idx} clauses, expected 12')
-            if await pg.evaluate("getComputedStyle(document.querySelector('.rail')).position") != 'sticky':
-                bad.append('the rail is not sticky on desktop')
+            idx = await pg.eval_on_selector_all('#toc ol a', 'e=>e.length')
+            if idx != 9:
+                bad.append(f'contents lists {idx} clauses, expected 9')
+            # the reading bar is hidden at the top and appears once past contents
+            if await pg.evaluate("document.querySelector('#bar').classList.contains('show')"):
+                bad.append('the reading bar is showing before the contents scroll past')
+            await pg.evaluate("document.querySelector('#c5').scrollIntoView()")
+            await pg.wait_for_timeout(600)
+            if not await pg.evaluate("document.querySelector('#bar').classList.contains('show')"):
+                bad.append('the reading bar never appeared while reading')
+            hereTxt = (await pg.inner_text('#here')).strip()
+            if not hereTxt.startswith('§'):
+                bad.append(f'the reading bar does not name the clause: {hereTxt!r}')
+            await pg.evaluate('window.scrollTo(0,0)')
+            await pg.wait_for_timeout(500)
 
             # ── Schedule A: real crypto, cross-checked ───────────────────
             await pg.fill('#f-job', JOB)

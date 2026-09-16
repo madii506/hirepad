@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>HIRE — bond instrument</title>
-<meta name="description" content="An agent that works for you. It bonds every job against its own wallet before it starts. If it fails to deliver, the bond is yours. Pre-launch: no mint address, no bond opened.">
+<meta name="description" content="An agent that works for you. It bonds every job against its own wallet before it starts. If it fails to deliver, the bond is yours.">
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
 <link rel="icon" href="assets/favicon-64.png" sizes="64x64">
 <link rel="apple-touch-icon" href="assets/favicon-180.png">
@@ -16,104 +16,96 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#000;
-  --ink:#ffffff;
-  --mid:#9299a2;
-  --low:#585e66;
-  --rule:rgba(255,255,255,.14);
-  --rule2:rgba(255,255,255,.065);
+  --bg:#000; --ink:#fff; --mid:#949aa3; --low:#5a6069;
+  --rule:rgba(255,255,255,.15); --rule2:rgba(255,255,255,.07);
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  --rail:336px;
+  --col:760px;
 }
 *{box-sizing:border-box}
 html{overflow-x:hidden;scroll-behavior:smooth}
 body{overflow-x:clip;margin:0;background:var(--bg);color:var(--ink);
-  font-family:var(--mono);font-size:14px;line-height:1.75;-webkit-font-smoothing:antialiased}
+  font-family:var(--mono);font-size:14px;line-height:1.78;-webkit-font-smoothing:antialiased}
 [hidden]{display:none!important}
 a{color:inherit}
 pre{margin:0;font-family:var(--mono)}
 
-.crt{position:fixed;inset:0;pointer-events:none;z-index:80;background:#000;
+.crt{position:fixed;inset:0;pointer-events:none;z-index:90;background:#000;
   animation:crt 6.4s ease-in-out infinite;will-change:opacity}
 @keyframes crt{
-  0%{opacity:.010} 11%{opacity:.058} 23%{opacity:.015} 38%{opacity:.074}
-  49%{opacity:.019} 63%{opacity:.048} 77%{opacity:.011} 88%{opacity:.040} 100%{opacity:.010}
+  0%{opacity:.010} 11%{opacity:.056} 23%{opacity:.015} 38%{opacity:.072}
+  49%{opacity:.019} 63%{opacity:.046} 77%{opacity:.011} 88%{opacity:.038} 100%{opacity:.010}
 }
-.scan{position:fixed;inset:0;pointer-events:none;z-index:79;opacity:.5;
+.scan{position:fixed;inset:0;pointer-events:none;z-index:89;opacity:.5;
   background:repeating-linear-gradient(to bottom,rgba(255,255,255,.026) 0 1px,transparent 1px 3px)}
 
-/* ══ two panes: a fixed instrument rail, and the instrument ══════════ */
-.shell{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);align-items:start}
+.col{max-width:var(--col);margin:0 auto;padding:0 28px}
 
-.rail{position:sticky;top:0;height:100vh;min-width:0;border-right:1px solid var(--rule);
-  padding:30px 26px 22px;display:flex;flex-direction:column;gap:0}
-#seal{white-space:pre;line-height:1.0;letter-spacing:.06em;font-size:5.6px;
-  color:var(--ink);opacity:.94;margin:0 0 20px;min-height:190px}
-.rail .name{font-size:23px;font-weight:700;letter-spacing:.24em;margin:0 0 10px}
-.rail .say{color:var(--mid);font-size:12.5px;margin:0 0 6px;line-height:1.6}
-.rail .say b{color:var(--ink);font-weight:600}
-.rail hr{border:0;border-top:1px solid var(--rule2);margin:20px 0 14px;width:100%}
-.idx{overflow-y:auto;flex:1;margin:0 -8px;padding:0 8px}
-.idx::-webkit-scrollbar{width:4px}
-.idx::-webkit-scrollbar-thumb{background:var(--rule)}
-.idx a{display:grid;grid-template-columns:34px 1fr;gap:8px;text-decoration:none;
-  color:var(--low);font-size:12px;padding:3px 0;transition:.14s}
-.idx a em{font-style:normal;color:var(--low)}
-.idx a:hover{color:var(--ink)} .idx a:hover em{color:var(--ink)}
-.idx a.on{color:var(--ink)} .idx a.on em{color:var(--ink)}
-.rail .foot{border-top:1px solid var(--rule2);padding-top:13px;margin-top:13px;
-  font-size:10.5px;color:var(--low);letter-spacing:.06em;line-height:1.7}
-.rail .foot a{color:var(--mid);text-underline-offset:3px}
-.rail .foot b{color:var(--ink);font-weight:500}
+/* ── the only chrome: a hairline bar, and only once you are reading ── */
+#bar{position:fixed;top:0;left:0;right:0;z-index:60;background:rgba(0,0,0,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);
+  transform:translateY(-101%);transition:transform .22s ease}
+#bar.show{transform:none}
+#bar .in{max-width:var(--col);margin:0 auto;padding:9px 28px;display:flex;
+  justify-content:space-between;align-items:center;gap:16px;font-size:11.5px}
+#bar .here{color:var(--mid);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bar .here b{color:var(--ink);font-weight:600}
+#bar a{color:var(--low);text-decoration:none;white-space:nowrap;transition:.14s}
+#bar a:hover{color:var(--ink)}
 
-.doc{max-width:860px;min-width:0;padding:0 44px 120px}
+/* ── masthead ─────────────────────────────────────────────────────── */
+.top{padding-top:58px;padding-bottom:42px}
+#seal{white-space:pre;line-height:1.0;letter-spacing:.06em;font-size:5.4px;
+  color:var(--ink);opacity:.95;margin:0 0 26px;min-height:184px}
+.top h1{font-size:23px;font-weight:700;letter-spacing:.3em;margin:0 0 22px}
+.top .say{font-size:clamp(17px,2.4vw,22px);line-height:1.55;margin:0;max-width:22ch;
+  font-weight:500;letter-spacing:-.01em}
+.top .say em{font-style:italic;font-weight:400;color:var(--mid)}
+.meta{margin:30px 0 0;padding-top:16px;border-top:1px solid var(--rule2);
+  color:var(--low);font-size:11px;letter-spacing:.13em;text-transform:uppercase}
 
-/* ══ preamble ═══════════════════════════════════════════════════════ */
-.pre{padding:46px 0 34px;border-bottom:1px solid var(--rule)}
-.kind{font-size:10px;letter-spacing:.24em;color:var(--low);text-transform:uppercase;margin:0 0 20px}
-.pre h1{font-size:clamp(22px,3vw,31px);line-height:1.4;font-weight:600;margin:0 0 20px;
-  letter-spacing:-.015em;max-width:24ch}
-.pre h1 em{font-style:italic;font-weight:400;color:var(--mid)}
-.spine{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));
-  border-top:1px solid var(--rule2);border-left:1px solid var(--rule2)}
-.spine div{border-right:1px solid var(--rule2);border-bottom:1px solid var(--rule2);padding:10px 12px}
-.spine span{display:block;font-size:9px;letter-spacing:.17em;color:var(--low);
-  text-transform:uppercase;margin-bottom:3px}
-.spine b{font-size:12.5px;font-weight:500}
+/* ── contents, as the front page of a document ────────────────────── */
+.toc{padding-bottom:46px}
+.toc .cap{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--low);
+  margin:0 0 14px}
+.toc ol{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule2)}
+.toc li{border-bottom:1px solid var(--rule2)}
+.toc a{display:grid;grid-template-columns:40px 1fr auto;gap:14px;align-items:baseline;
+  text-decoration:none;padding:9px 0;color:var(--ink);transition:.14s}
+.toc a em{font-style:normal;color:var(--low);font-size:12px}
+.toc a i{font-style:normal;color:var(--low);font-size:11.5px;text-align:right}
+.toc a:hover em,.toc a:hover i{color:var(--mid)}
+.toc a span{font-size:13.5px}
 
-/* ══ clauses ════════════════════════════════════════════════════════ */
-.cl{padding:38px 0;border-bottom:1px solid var(--rule2);scroll-margin-top:16px}
-.cl:last-of-type{border-bottom:0}
-.ch{display:grid;grid-template-columns:62px 1fr;gap:10px;align-items:baseline;margin:0 0 16px}
-.ch .no{color:var(--low);font-size:12.5px;letter-spacing:.04em}
-.ch h2{font-size:17.5px;font-weight:600;margin:0;letter-spacing:-.01em}
-.cl p{color:var(--mid);margin:0 0 13px;max-width:72ch;font-size:13.5px}
+/* ── clauses ──────────────────────────────────────────────────────── */
+.cl{padding-top:42px;padding-bottom:42px;border-top:1px solid var(--rule);scroll-margin-top:52px}
+.ch{display:flex;align-items:baseline;gap:14px;margin:0 0 18px;flex-wrap:wrap}
+.ch .no{color:var(--low);font-size:12px}
+.ch h2{font-size:19px;font-weight:600;margin:0;letter-spacing:-.012em}
+.cl p{color:var(--mid);margin:0 0 14px;max-width:70ch;font-size:13.5px}
 .cl p:last-child{margin-bottom:0}
 .cl p b,.cl li b,dd b,td b{color:var(--ink);font-weight:600}
-.sub{display:grid;grid-template-columns:62px 1fr;gap:10px;margin:24px 0 10px}
-.sub .no{color:var(--low);font-size:12px}
-.sub h3{font-size:13.5px;font-weight:600;margin:0;scroll-margin-top:16px}
-.ind{padding-left:72px}
-@media(max-width:620px){ .ind{padding-left:0} .ch,.sub{grid-template-columns:1fr;gap:2px} }
+h3{font-size:13.5px;font-weight:600;margin:30px 0 10px;scroll-margin-top:52px;
+  display:flex;align-items:baseline;gap:14px}
+h3 em{font-style:normal;color:var(--low);font-size:12px;font-weight:400}
 
 code{border:1px solid var(--rule2);padding:1px 5px;font-size:12.5px;color:var(--ink)}
 a.lnk{color:var(--ink);text-underline-offset:3px}
 
-/* ══ schedules — the interactive parts ══════════════════════════════ */
-.sch{border:1px solid var(--rule);margin:20px 0}
+/* ── schedules ────────────────────────────────────────────────────── */
+.sch{border:1px solid var(--rule);margin:22px 0}
 .sch>.hd{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
   padding:11px 16px;border-bottom:1px solid var(--rule);font-size:10px;
   letter-spacing:.17em;text-transform:uppercase;color:var(--low)}
 .sch>.hd b{color:var(--ink);font-weight:600;letter-spacing:.17em}
 .sch>.bd{padding:16px}
-.sch p{font-size:13px}
+.sch p{font-size:13px;max-width:none}
 
 label{display:block;font-size:9.5px;letter-spacing:.16em;color:var(--low);
   text-transform:uppercase;margin:0 0 6px}
-input[type=text],input[type=number],textarea{width:100%;padding:9px 11px;
+input[type=text],input[type=number],textarea{width:100%;padding:9px 11px;border-radius:0;
   border:1px solid var(--rule);background:#000;color:var(--ink);
-  font-family:var(--mono);font-size:13px;line-height:1.6;border-radius:0}
-textarea{resize:vertical;min-height:70px}
+  font-family:var(--mono);font-size:13px;line-height:1.6}
+textarea{resize:vertical;min-height:68px}
 input::placeholder,textarea::placeholder{color:var(--low)}
 input:focus,textarea:focus{outline:none;border-color:var(--ink)}
 .f{margin-bottom:13px}
@@ -124,7 +116,7 @@ input:focus,textarea:focus{outline:none;border-color:var(--ink)}
   color:var(--ink);transition:.14s;border-radius:0}
 .btn:hover{border-color:var(--ink)}
 .btn.on{background:var(--ink);color:#000;border-color:var(--ink);font-weight:600}
-.bar{display:flex;gap:9px;flex-wrap:wrap}
+.bar2{display:flex;gap:9px;flex-wrap:wrap}
 
 .kv{display:grid;grid-template-columns:1fr auto;gap:12px;padding:8px 0;
   border-bottom:1px solid var(--rule2);font-size:13px;align-items:baseline}
@@ -143,10 +135,11 @@ input:focus,textarea:focus{outline:none;border-color:var(--ink)}
   font-size:12.5px;color:var(--mid);word-break:break-word}
 .out b{color:var(--ink)}
 
-table{width:100%;border-collapse:collapse;font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:4px 0}
 th{text-align:left;color:var(--low);font-weight:500;font-size:9.5px;letter-spacing:.15em;
-  text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--rule)}
-td{padding:10px 14px;border-bottom:1px solid var(--rule2);color:var(--mid);vertical-align:top}
+  text-transform:uppercase;padding:10px 0;border-bottom:1px solid var(--rule)}
+td{padding:10px 0;border-bottom:1px solid var(--rule2);color:var(--mid);vertical-align:top}
+td+td,th+th{padding-left:18px}
 tr:last-child td{border-bottom:0}
 td.nw{white-space:nowrap}
 .st.ok{color:var(--ink)} .st.bad{color:var(--mid)} .st.wait{color:var(--low)}
@@ -155,48 +148,43 @@ td.nw{white-space:nowrap}
 dl{margin:0;border-top:1px solid var(--rule2)}
 dt{color:var(--ink);font-weight:600;font-size:13px;padding:13px 0 2px}
 dd{margin:0;color:var(--mid);font-size:13px;border-bottom:1px solid var(--rule2);
-  padding-bottom:13px;max-width:72ch}
+  padding-bottom:13px;max-width:70ch}
 dd:last-child{border-bottom:0}
 
-ul.l{margin:0 0 13px;padding:0;list-style:none}
-ul.l li{color:var(--mid);font-size:13px;padding:7px 0 7px 16px;position:relative;
+ul.l{margin:0 0 14px;padding:0;list-style:none}
+ul.l li{color:var(--mid);font-size:13px;padding:8px 0 8px 18px;position:relative;
   border-bottom:1px solid var(--rule2)}
 ul.l li:last-child{border-bottom:0}
 ul.l li::before{content:"—";position:absolute;left:0;color:var(--low)}
 
-.mark{border-left:1px solid var(--ink);padding:12px 0 12px 15px;margin:18px 0}
+.mark{border-left:1px solid var(--ink);padding:2px 0 2px 16px;margin:20px 0}
 .mark p{margin:0;color:var(--mid);font-size:13px}
 .mark .t{color:var(--ink);font-size:9.5px;letter-spacing:.17em;text-transform:uppercase;
-  display:block;margin-bottom:5px}
+  display:block;margin-bottom:6px}
 .code{border:1px solid var(--rule2);padding:14px 15px;overflow-x:auto;white-space:pre;
-  font-size:12.5px;line-height:1.7;color:var(--mid);margin:16px 0}
+  font-size:12.5px;line-height:1.7;color:var(--mid);margin:18px 0}
 .code .c{color:var(--low)} .code .k{color:var(--ink)}
+
+.end{border-top:1px solid var(--rule);padding-top:26px;padding-bottom:80px;color:var(--low);font-size:11.5px;
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.end a{color:var(--mid);text-underline-offset:3px}
 
 .rv{opacity:0;transform:translateY(8px);transition:opacity .42s ease,transform .42s ease}
 .rv.vis{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
   .rv{opacity:1;transform:none;transition:none} .crt{animation:none;opacity:0}
-}
-
-/* ══ narrow: the rail becomes a header, the index collapses ═════════ */
-#rb{display:none;background:none;border:1px solid var(--rule);color:var(--ink);
-  padding:6px 11px;font-size:11.5px;cursor:pointer;font-family:var(--mono)}
-@media(max-width:1000px){
-  .shell{grid-template-columns:minmax(0,1fr)}
-  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--rule);
-    padding:26px 20px 18px}
-  #seal{font-size:4.6px;min-height:0;margin-bottom:16px}
-  .idx{display:none;max-height:none;margin-top:12px}
-  .idx.open{display:block}
-  #rb{display:inline-block;margin-top:14px}
-  .rail hr{display:none}
-  .doc{padding:0 20px 90px;max-width:none}
-  .pre{padding:32px 0 26px}
+  #bar{transition:none}
 }
 @media(max-width:620px){
-  th,td{padding:8px 9px;font-size:11.5px}
+  .col{padding:0 18px}
+  #bar .in{padding:9px 18px}
+  .top{padding-top:40px;padding-bottom:32px}
+  #seal{font-size:4.5px;min-height:0;margin-bottom:20px}
   .g2,.g3{grid-template-columns:1fr}
-  .doc{padding:0 16px 80px}
+  td+td,th+th{padding-left:12px}
+  table{font-size:11.5px}
+  .toc a{grid-template-columns:32px 1fr;gap:10px}
+  .toc a i{display:none}
 }
 </style>
 </head>
@@ -204,106 +192,88 @@ ul.l li::before{content:"—";position:absolute;left:0;color:var(--low)}
 <div class="crt" aria-hidden="true"></div>
 <div class="scan" aria-hidden="true"></div>
 
-<div class="shell">
+<div id="bar">
+  <div class="in">
+    <span class="here" id="here">HIRE</span>
+    <a href="#toc">contents &uarr;</a>
+  </div>
+</div>
 
-  <!-- ══ the rail ══════════════════════════════════════════════════ -->
-  <aside class="rail">
-    <pre id="seal" aria-label="HIRE"> </pre>
-    <p class="name">HIRE</p>
-    <p class="say">An agent that works for you. It stakes its own money on every job it takes.
-      <b>If it does not deliver, that money becomes yours.</b></p>
-    <button id="rb" aria-expanded="false">contents</button>
-    <hr>
-    <nav class="idx" id="idx">
-      <a href="#c1"><em>§1</em><span>The agreement</span></a>
-      <a href="#c2"><em>§2</em><span>Definitions</span></a>
-      <a href="#c3"><em>§3</em><span>The commitment</span></a>
-      <a href="#c4"><em>§4</em><span>The bond</span></a>
-      <a href="#c5"><em>§5</em><span>Capacity</span></a>
-      <a href="#c6"><em>§6</em><span>Settlement</span></a>
-      <a href="#c7"><em>§7</em><span>Failure</span></a>
-      <a href="#c8"><em>§8</em><span>The program</span></a>
-      <a href="#c9"><em>§9</em><span>The readers</span></a>
-      <a href="#c10"><em>§10</em><span>The operator</span></a>
-      <a href="#c11"><em>§11</em><span>Limitations</span></a>
-      <a href="#c12"><em>§12</em><span>Status</span></a>
-    </nav>
-    <div class="foot">
-      <b>Pre-launch.</b> No mint address. No bond has been opened.<br>
-      <a href="docs.html">Reference &amp; API →</a>
+<header class="top col">
+  <pre id="seal" aria-label="HIRE"> </pre>
+  <h1>HIRE</h1>
+  <p class="say">It works. It bonds every job. <em>If it fails, it pays you.</em></p>
+  <p class="meta">Bond instrument &nbsp;·&nbsp; version 0.1 &nbsp;·&nbsp; unexecuted</p>
+</header>
+
+<nav class="toc col" id="toc">
+  <p class="cap">Contents</p>
+  <ol>
+    <li><a href="#c1"><em>§1</em><span>The agreement</span><i>what you are buying</i></a></li>
+    <li><a href="#c2"><em>§2</em><span>Definitions</span><i>seven words</i></a></li>
+    <li><a href="#c3"><em>§3</em><span>The commitment</span><i>schedule A</i></a></li>
+    <li><a href="#c4"><em>§4</em><span>The bond</span><i>why it equals the price</i></a></li>
+    <li><a href="#c5"><em>§5</em><span>The ceiling</span><i>schedule B</i></a></li>
+    <li><a href="#c6"><em>§6</em><span>Settlement</span><i>and when it goes wrong</i></a></li>
+    <li><a href="#c7"><em>§7</em><span>The program</span><i>four accounts, six instructions</i></a></li>
+    <li><a href="#c8"><em>§8</em><span>The readers</span><i>schedule C</i></a></li>
+    <li><a href="#c9"><em>§9</em><span>What is not true yet</span><i>read this one</i></a></li>
+  </ol>
+</nav>
+
+<main>
+
+  <section class="cl col rv" id="c1">
+    <div class="ch"><span class="no">§1</span><h2>The agreement</h2></div>
+    <p>You pay HIRE to do a job. Before it starts, it stakes an equal amount of its own money
+      against finishing — a <b>bond</b>, opened onchain, against a hash of the exact terms and a
+      deadline.</p>
+    <p>Deliver, and the bond returns to it and it keeps your fee. Miss the deadline, and the bond
+      is yours along with your fee back. Failing costs it exactly what delivering would have
+      earned, and the whole swing lands on you.</p>
+    <p>That is the entire agreement. Everything below is the detail underneath it, written down so
+      it cannot be changed quietly.</p>
+    <div class="mark">
+      <span class="t">What is not being claimed</span>
+      <p>Nobody grades the work. The bond settles on whether proof was filed before the deadline,
+        which is a fact — not on whether anyone was pleased, which is an argument. §6 explains why,
+        and §9 says what that costs you.</p>
     </div>
-  </aside>
+  </section>
 
-  <!-- ══ the instrument ════════════════════════════════════════════ -->
-  <main class="doc">
+  <section class="cl col rv" id="c2">
+    <div class="ch"><span class="no">§2</span><h2>Definitions</h2></div>
+    <p>Where these words appear anywhere on this site, they mean exactly this and nothing looser.</p>
+    <dl>
+      <dt>Bond</dt>
+      <dd>Money the agent stakes from its own wallet against finishing a job. Not a fee, not a
+        deposit you pay, and not held by a third party. It is the agent's money at risk.</dd>
+      <dt>Job hash</dt>
+      <dd><code>sha256</code> of the canonical string in §3. It <b>is</b> the job's identity — there
+        is no other name for a job, and a one-character edit produces a different one.</dd>
+      <dt>Proof</dt>
+      <dd>A public post filed against the bond before the deadline. Proof means something was
+        filed, not that it was any good.</dd>
+      <dt>Deadline</dt>
+      <dd>A slot fixed when the bond opens. It never moves. There is no extension mechanism,
+        because an extension mechanism is a way to never fail.</dd>
+      <dt>Ceiling</dt>
+      <dd>The largest job the agent can accept, equal to its wallet balance. Not a policy —
+        arithmetic, because the bond has to be covered.</dd>
+      <dt>Forfeited</dt>
+      <dd>A bond that went to the client because the deadline passed without proof. Permanent, and
+        never removed from the failed count.</dd>
+      <dt>A dash</dt>
+      <dd>Not zero. A dash means there is no number to show. A zero would claim something was
+        measured and came back empty, which is a different statement.</dd>
+    </dl>
+  </section>
 
-    <header class="pre">
-      <p class="kind">Bond instrument · version 0.1 · unexecuted</p>
-      <h1>It works. It bonds every job. <em>If it fails, it pays you.</em></h1>
-      <div class="spine">
-        <div><span>Venue</span><b>pump.fun</b></div>
-        <div><span>Chain</span><b>Solana</b></div>
-        <div><span>Rail</span><b>X Money</b></div>
-        <div><span>Commitment</span><b>sha256(utf8)</b></div>
-        <div><span>Bond ratio</span><b>1 : 1</b></div>
-        <div><span>Deployed</span><b>no</b></div>
-      </div>
-    </header>
-
-    <!-- §1 -->
-    <section class="cl rv" id="c1">
-      <div class="ch"><span class="no">§1</span><h2>The agreement</h2></div>
-      <p>You pay HIRE to do a job. Before it starts, it stakes an equal amount of its own money
-        against finishing — a <b>bond</b>, opened onchain, against a hash of the exact terms and a
-        deadline.</p>
-      <p>Deliver, and the bond returns to it and it keeps your fee. Miss the deadline, and the bond
-        is yours along with your fee back. Failing costs it exactly what delivering would have
-        earned, and the whole swing lands on you.</p>
-      <p>That is the entire agreement. Everything below is the detail underneath it, written down
-        so it cannot be changed quietly.</p>
-      <div class="mark">
-        <span class="t">What is not being claimed</span>
-        <p>Nobody grades the work. The bond settles on whether proof was filed before the deadline,
-          which is a fact — not on whether anyone was pleased, which is an argument. §6 explains why,
-          and §11 says what that costs you.</p>
-      </div>
-    </section>
-
-    <!-- §2 -->
-    <section class="cl rv" id="c2">
-      <div class="ch"><span class="no">§2</span><h2>Definitions</h2></div>
-      <p>Where these words appear anywhere on this site, they mean exactly this and nothing looser.</p>
-      <dl>
-        <dt>Bond</dt>
-        <dd>Money the agent stakes from its own wallet against finishing a job. Not a fee, not a
-          deposit you pay, and not held by a third party. It is the agent's money at risk.</dd>
-        <dt>Job hash</dt>
-        <dd><code>sha256</code> of the canonical string in §3. It <b>is</b> the job's identity —
-          there is no other name for a job, and a one-character edit produces a different one.</dd>
-        <dt>Proof</dt>
-        <dd>A public post filed against the bond before the deadline. Proof means something was
-          filed, not that it was any good.</dd>
-        <dt>Deadline</dt>
-        <dd>A slot fixed when the bond opens. It never moves. There is no extension mechanism,
-          because an extension mechanism is a way to never fail.</dd>
-        <dt>Ceiling</dt>
-        <dd>The largest job the agent can accept, equal to its wallet balance. Not a policy —
-          arithmetic, because the bond has to be covered.</dd>
-        <dt>Forfeited</dt>
-        <dd>A bond that went to the client because the deadline passed without proof. Permanent, and
-          never removed from the failed count.</dd>
-        <dt>A dash</dt>
-        <dd>Not zero. A dash means there is no number to show. A zero would claim something was
-          measured and came back empty, which is a different statement.</dd>
-      </dl>
-    </section>
-
-    <!-- §3 -->
-    <section class="cl rv" id="c3">
-      <div class="ch"><span class="no">§3</span><h2>The commitment</h2></div>
-      <p>Before work begins, the terms are folded into one canonical string and hashed. That string
-        is byte-exact and is the only thing ever hashed.</p>
-      <div class="code"><span class="c"># five lines, LF separated, no trailing newline</span>
+  <section class="cl col rv" id="c3">
+    <div class="ch"><span class="no">§3</span><h2>The commitment</h2></div>
+    <p>Before work begins, the terms are folded into one canonical string and hashed. That string
+      is byte-exact and is the only thing ever hashed.</p>
+    <div class="code"><span class="c"># five lines, LF separated, no trailing newline</span>
 HIRE/v1
 job=&lt;text, whitespace collapsed to single spaces, trimmed, max 2000 chars&gt;
 price=&lt;integer cents&gt;
@@ -311,344 +281,313 @@ bond=&lt;integer cents&gt;
 deadline=&lt;integer hours&gt;h
 
 job_hash = sha256(utf8(canonical))</div>
-      <p>Three things here are load-bearing. Whitespace is collapsed <b>before</b> hashing, so a
-        pasted line break cannot fork the hash for what is obviously the same job. Money is in
-        <b>integer cents</b>, so no float touches a commitment. And the version prefix stops a future
-        format change silently reinterpreting an old hash.</p>
+    <p>Three things here are load-bearing. Whitespace is collapsed <b>before</b> hashing, so a
+      pasted line break cannot fork the hash for what is obviously the same job. Money is in
+      <b>integer cents</b>, so no float touches a commitment. And the version prefix stops a future
+      format change silently reinterpreting an old hash.</p>
 
-      <div class="sch" id="schA">
-        <div class="hd"><span><b>Schedule A</b> — commitment calculator</span>
-          <span id="A-state">idle</span></div>
-        <div class="bd">
-          <p style="margin-top:0">Type terms below. The page builds the canonical string, hashes it
-            in your browser with Web Crypto, and independently hashes it on the server — then shows
-            both. Change one character and watch the digest move.</p>
-          <div class="f">
-            <label for="f-job">the job, exactly as agreed</label>
-            <textarea id="f-job" spellcheck="false" placeholder="e.g. Read every reply to the pinned post, pull out the questions, and post a numbered summary in this thread."></textarea>
-          </div>
-          <div class="g3">
-            <div class="f"><label for="f-price">price (usd)</label>
-              <input type="number" id="f-price" min="0" step="1" placeholder="0"></div>
-            <div class="f"><label for="f-deadline">deadline (hours)</label>
-              <input type="number" id="f-deadline" min="1" max="720" step="1" placeholder="24"></div>
-            <div class="f"><label>bond it must stake</label>
-              <input type="text" id="f-bond" value="—" readonly tabindex="-1"></div>
-          </div>
-          <div class="bar">
-            <button class="btn on" id="b-verify">verify against the server</button>
-            <button class="btn" id="b-tamper">tamper with one character</button>
-            <button class="btn" id="b-clear">clear</button>
-          </div>
+    <div class="sch" id="schA">
+      <div class="hd"><span><b>Schedule A</b> — commitment calculator</span><span id="A-state">idle</span></div>
+      <div class="bd">
+        <p style="margin-top:0">Type terms below. The page builds the canonical string, hashes it in
+          your browser with Web Crypto, and independently hashes it on the server — then shows both.
+          Change one character and watch the digest move.</p>
+        <div class="f">
+          <label for="f-job">the job, exactly as agreed</label>
+          <textarea id="f-job" spellcheck="false" placeholder="e.g. Read every reply to the pinned post, pull out the questions, and post a numbered summary in this thread."></textarea>
+        </div>
+        <div class="g3">
+          <div class="f"><label for="f-price">price (usd)</label>
+            <input type="number" id="f-price" min="0" step="1" placeholder="0"></div>
+          <div class="f"><label for="f-deadline">deadline (hours)</label>
+            <input type="number" id="f-deadline" min="1" max="720" step="1" placeholder="24"></div>
+          <div class="f"><label>bond it must stake</label>
+            <input type="text" id="f-bond" value="—" readonly tabindex="-1"></div>
+        </div>
+        <div class="bar2">
+          <button class="btn on" id="b-verify">verify against the server</button>
+          <button class="btn" id="b-tamper">tamper with one character</button>
+          <button class="btn" id="b-clear">clear</button>
+        </div>
 
-          <div class="lab"><span>Canonical string — what is hashed</span><span id="A-bytes">—</span></div>
-          <pre class="blk" id="A-canon">enter a job above</pre>
+        <div class="lab"><span>Canonical string — what is hashed</span><span id="A-bytes">—</span></div>
+        <pre class="blk" id="A-canon">enter a job above</pre>
 
-          <div class="lab"><span>sha-256 — in your browser</span><span class="tag" id="A-tc">web crypto</span></div>
-          <div class="hash" id="A-hc">—</div>
+        <div class="lab"><span>sha-256 — in your browser</span><span class="tag" id="A-tc">web crypto</span></div>
+        <div class="hash" id="A-hc">—</div>
 
-          <div class="lab"><span>sha-256 — on the server</span><span class="tag" id="A-ts">not checked</span></div>
-          <div class="hash" id="A-hs">—</div>
+        <div class="lab"><span>sha-256 — on the server</span><span class="tag" id="A-ts">not checked</span></div>
+        <div class="hash" id="A-hs">—</div>
 
-          <div style="margin-top:14px">
-            <div class="kv"><span>agreement</span><b id="A-match">—</b></div>
-            <div class="kv"><span>price / bond</span><b id="A-amt">—</b></div>
-            <div class="kv"><span>if it fails, you receive</span><b id="A-fail">—</b></div>
-          </div>
+        <div style="margin-top:14px">
+          <div class="kv"><span>agreement</span><b id="A-match">—</b></div>
+          <div class="kv"><span>price / bond</span><b id="A-amt">—</b></div>
+          <div class="kv"><span>if it fails, you receive</span><b id="A-fail">—</b></div>
         </div>
       </div>
+    </div>
 
-      <div class="sub"><span class="no">§3.1</span><h3 id="c3-1">Verifying it yourself</h3></div>
-      <div class="ind">
-        <p>Two implementations are printed above so you do not have to trust either. Add a third
-          against the exact string the page shows:</p>
-        <div class="code">printf 'HIRE/v1\njob=%s\nprice=%s\nbond=%s\ndeadline=%sh' \
+    <h3 id="c3-1"><em>§3.1</em>Verifying it yourself</h3>
+    <p>Two implementations are printed above so you do not have to trust either. Add a third against
+      the exact string the page shows:</p>
+    <div class="code">printf 'HIRE/v1\njob=%s\nprice=%s\nbond=%s\ndeadline=%sh' \
   "read the replies and summarise them" 4000 4000 24 | sha256sum</div>
-        <p>If those three ever disagree, one is wrong and you can see which.</p>
-      </div>
-    </section>
+    <p>If those three ever disagree, one is wrong and you can see which.</p>
+  </section>
 
-    <!-- §4 -->
-    <section class="cl rv" id="c4">
-      <div class="ch"><span class="no">§4</span><h2>The bond</h2></div>
-      <p>The bond is set equal to the price. That single choice does most of the work.</p>
-      <table>
-        <thead><tr><th>outcome</th><th>the agent</th><th>you</th></tr></thead>
-        <tbody>
-          <tr><td class="nw"><b>delivered</b></td><td>keeps the fee, bond returns</td><td>you paid the fee and got the work</td></tr>
-          <tr><td class="nw"><b>failed</b></td><td>loses the bond, refunds the fee</td><td>your fee back, plus the bond on top</td></tr>
-        </tbody>
-      </table>
-      <p style="margin-top:16px">So the swing between delivering and failing is <b>twice the
-        price</b>, and it is symmetric — the agent's downside is exactly your upside. A smaller bond
-        would make failure cheap. A larger one would make it refuse work it could easily do. Equal is
-        the point where taking a job it cannot finish is never rational.</p>
-      <div class="mark">
-        <span class="t">What this is not</span>
-        <p>Not insurance, and not escrow. Nobody holds your money for you. The only money at risk
-          beyond your own fee is the agent's.</p>
-      </div>
-    </section>
+  <section class="cl col rv" id="c4">
+    <div class="ch"><span class="no">§4</span><h2>The bond</h2></div>
+    <p>The bond is set equal to the price. That single choice does most of the work.</p>
+    <table>
+      <thead><tr><th>outcome</th><th>the agent</th><th>you</th></tr></thead>
+      <tbody>
+        <tr><td class="nw"><b>delivered</b></td><td>keeps the fee, bond returns</td><td>you paid the fee and got the work</td></tr>
+        <tr><td class="nw"><b>failed</b></td><td>loses the bond, refunds the fee</td><td>your fee back, plus the bond on top</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:18px">So the swing between delivering and failing is <b>twice the
+      price</b>, and it is symmetric — the agent's downside is exactly your upside. A smaller bond
+      would make failure cheap. A larger one would make it refuse work it could easily do. Equal is
+      the point where taking a job it cannot finish is never rational.</p>
+    <div class="mark">
+      <span class="t">What this is not</span>
+      <p>Not insurance, and not escrow. Nobody holds your money for you. The only money at risk
+        beyond your own fee is the agent's.</p>
+    </div>
+  </section>
 
-    <!-- §5 -->
-    <section class="cl rv" id="c5">
-      <div class="ch"><span class="no">§5</span><h2>Capacity</h2></div>
-      <p>Because the bond must be covered, the largest job the agent can accept equals its balance.
-        Its wallet is not a treasury — it is a limit.</p>
-      <div class="code">ceiling      = wallet_balance
+  <section class="cl col rv" id="c5">
+    <div class="ch"><span class="no">§5</span><h2>The ceiling</h2></div>
+    <p>Because the bond must be covered, the largest job the agent can accept equals its balance.
+      Its wallet is not a treasury — it is a limit.</p>
+    <div class="code">ceiling      = wallet_balance
 can_accept   = 0 &lt; price &lt;= ceiling
 after_win    = balance + price
 after_loss   = balance − price
 ruin_at(p)   = floor(balance / p)   <span class="c"># consecutive failures at price p</span></div>
-      <p>Two consequences worth stating plainly. The agent <b>refuses jobs out loud</b> rather than
-        taking money it could not cover, because an uncovered bond is a promise and promises are what
-        this replaces. And a failing agent shrinks: every forfeit lowers what it can be hired for
-        next, so it prices itself out without anyone intervening.</p>
+    <p>Two consequences worth stating plainly. The agent <b>refuses jobs out loud</b> rather than
+      taking money it could not cover, because an uncovered bond is a promise and promises are what
+      this replaces. And a failing agent shrinks: every forfeit lowers what it can be hired for
+      next, so it prices itself out without anyone intervening.</p>
 
-      <div class="sch" id="schB">
-        <div class="hd"><span><b>Schedule B</b> — capacity model</span>
-          <span>arithmetic on figures you enter</span></div>
-        <div class="bd">
-          <p style="margin-top:0">There is no wallet yet, so nothing here is read from anywhere.
-            Enter a balance to see how the ceiling would behave.</p>
-          <div class="g2">
-            <div class="f"><label for="f-bal">hypothetical wallet balance (usd)</label>
-              <input type="number" id="f-bal" min="0" step="10" placeholder="0"></div>
-            <div class="f"><label for="f-ask">job you want to hire it for (usd)</label>
-              <input type="number" id="f-ask" min="0" step="10" placeholder="0"></div>
-          </div>
-          <div class="kv"><span>job ceiling</span><b id="B-ceil">—</b></div>
-          <div class="kv"><span>can it accept this job</span><b id="B-can">—</b></div>
-          <div class="kv"><span>balance if it delivers</span><b id="B-win">—</b></div>
-          <div class="kv"><span>balance if it fails</span><b id="B-lose">—</b></div>
-          <div class="kv"><span>consecutive failures until it cannot work at all</span><b id="B-ruin">—</b></div>
-          <pre class="blk" id="B-bar" style="margin-top:13px">enter a balance and a job</pre>
+    <div class="sch" id="schB">
+      <div class="hd"><span><b>Schedule B</b> — capacity model</span><span>figures you enter</span></div>
+      <div class="bd">
+        <p style="margin-top:0">There is no wallet, so nothing here is read from anywhere. Enter a
+          balance to see how the ceiling would behave.</p>
+        <div class="g2">
+          <div class="f"><label for="f-bal">hypothetical wallet balance (usd)</label>
+            <input type="number" id="f-bal" min="0" step="10" placeholder="0"></div>
+          <div class="f"><label for="f-ask">job you want to hire it for (usd)</label>
+            <input type="number" id="f-ask" min="0" step="10" placeholder="0"></div>
         </div>
+        <div class="kv"><span>job ceiling</span><b id="B-ceil">—</b></div>
+        <div class="kv"><span>can it accept this job</span><b id="B-can">—</b></div>
+        <div class="kv"><span>balance if it delivers</span><b id="B-win">—</b></div>
+        <div class="kv"><span>balance if it fails</span><b id="B-lose">—</b></div>
+        <div class="kv"><span>consecutive failures until it cannot work at all</span><b id="B-ruin">—</b></div>
+        <pre class="blk" id="B-bar" style="margin-top:13px">enter a balance and a job</pre>
       </div>
-      <p>The wallet will be funded by the creator fee on $HIRE. That means trading volume does
-        exactly one thing here — it raises the ceiling on what the agent can be hired for. It does
-        not buy reputation and it does not settle a job.</p>
-    </section>
+    </div>
+    <p>The wallet will be funded by the creator fee on $HIRE. Trading volume does exactly one thing
+      here — it raises the ceiling on what the agent can be hired for. It does not buy reputation
+      and it does not settle a job.</p>
+  </section>
 
-    <!-- §6 -->
-    <section class="cl rv" id="c6">
-      <div class="ch"><span class="no">§6</span><h2>Settlement</h2></div>
-      <p>Four steps, in this order. The ordering is the security property: every commitment is made
-        before the thing it constrains happens.</p>
-      <table>
-        <tbody>
-          <tr><td class="nw"><b>1 · commit</b></td><td>Terms, price, bond and deadline are hashed. The hash is the job.</td></tr>
-          <tr><td class="nw"><b>2 · bond</b></td><td>An equal amount is staked from the agent's own wallet against that hash. It cannot begin without this, and cannot open a bond it cannot cover.</td></tr>
-          <tr><td class="nw"><b>3 · file</b></td><td>Proof goes in the public thread the job was agreed in. Filing settles nothing by itself — it attaches a post id to the bond.</td></tr>
-          <tr><td class="nw"><b>4 · settle</b></td><td>The deadline decides. Proof in time settles delivered; no proof settles failed.</td></tr>
-        </tbody>
-      </table>
+  <section class="cl col rv" id="c6">
+    <div class="ch"><span class="no">§6</span><h2>Settlement</h2></div>
+    <p>Four steps, in this order. The ordering is the security property: every commitment is made
+      before the thing it constrains happens.</p>
+    <table>
+      <tbody>
+        <tr><td class="nw"><b>1 · commit</b></td><td>Terms, price, bond and deadline are hashed. The hash is the job.</td></tr>
+        <tr><td class="nw"><b>2 · bond</b></td><td>An equal amount is staked from the agent's own wallet against that hash. It cannot begin without this, and cannot open a bond it cannot cover.</td></tr>
+        <tr><td class="nw"><b>3 · file</b></td><td>Proof goes in the public thread the job was agreed in. Filing settles nothing by itself — it attaches a post id to the bond.</td></tr>
+        <tr><td class="nw"><b>4 · settle</b></td><td>The deadline decides. Proof in time settles delivered; no proof settles failed.</td></tr>
+      </tbody>
+    </table>
 
-      <div class="sub"><span class="no">§6.1</span><h3 id="c6-1">The rule, as written</h3></div>
-      <div class="ind">
-        <div class="code"><span class="c">// at or after the deadline slot</span>
+    <h3 id="c6-1"><em>§6.1</em>The rule, as written</h3>
+    <div class="code"><span class="c">// at or after the deadline slot</span>
 <span class="k">if</span> (bond.proof_post_id != <span class="k">null</span> &amp;&amp; bond.proof_slot &lt;= bond.deadline_slot) {
   settle_delivered();   <span class="c">// bond returns to the wallet, fee kept</span>
 } <span class="k">else</span> {
   settle_failed();      <span class="c">// bond + fee to the client</span>
 }
 <span class="c">// anyone may call expire() past the deadline to force the second branch</span></div>
-      </div>
 
-      <div class="sub"><span class="no">§6.2</span><h3 id="c6-2">Why no quality standard</h3></div>
-      <div class="ind">
-        <p>A quality standard sounds better and is worse. Whoever holds it can be argued with,
-          lobbied, or simply outlasted — and the agent is the party with the most time and the most
-          motivation to do all three. A deadline cannot be negotiated with.</p>
-        <p>So the bond settles on a fact, and everything else is left to the public record. Nothing
-          stops junk proof being filed; what stops it working is that the job hash, the proof post
-          and the settlement are all public and permanent. The ledger is the only reputation the
-          agent has, and it cannot edit it.</p>
-      </div>
-    </section>
+    <h3 id="c6-2"><em>§6.2</em>Why no quality standard</h3>
+    <p>A quality standard sounds better and is worse. Whoever holds it can be argued with, lobbied,
+      or simply outlasted — and the agent is the party with the most time and the most motivation to
+      do all three. A deadline cannot be negotiated with.</p>
+    <p>So the bond settles on a fact, and everything else is left to the public record. Nothing
+      stops junk proof being filed; what stops it working is that the job hash, the proof post and
+      the settlement are all public and permanent. The ledger is the only reputation the agent has,
+      and it cannot edit it.</p>
 
-    <!-- §7 -->
-    <section class="cl rv" id="c7">
-      <div class="ch"><span class="no">§7</span><h2>Failure</h2></div>
-      <p>Each of these has an answer decided in advance, rather than after somebody loses money.</p>
-      <table>
-        <thead><tr><th style="width:36%">if</th><th>then</th></tr></thead>
-        <tbody>
-          <tr><td><b>The agent vanishes after taking the job</b></td><td>The deadline passes with no proof and <b>anyone</b> can call <code>expire()</code> to force the failed settlement. It does not require the agent's co-operation.</td></tr>
-          <tr><td><b>The proof post is deleted before the deadline</b></td><td>The id no longer resolves, so it does not count as filed and the bond fails. Proof has to exist at settlement, not merely have existed.</td></tr>
-          <tr><td><b>The proof post is deleted after settlement</b></td><td>Nothing reverses. The ledger row keeps the dead link, marked deleted.</td></tr>
-          <tr><td><b>You change your mind about the terms</b></td><td>Different hash, so a different job. The open bond runs to its own deadline on the original terms.</td></tr>
-          <tr><td><b>The job was impossible</b></td><td>The agent should refuse before bonding. If it bonds anyway it fails and pays — that cost is the mechanism working, not breaking.</td></tr>
-          <tr><td><b>Proof was filed on time and you are unhappy</b></td><td>It settles delivered. You are not made whole. Stated here so nobody is surprised by it later.</td></tr>
-          <tr><td><b>The wallet is empty</b></td><td>The ceiling is zero, so it accepts nothing. It goes quiet rather than working unbonded.</td></tr>
-          <tr><td><b>X is unreachable at the deadline</b></td><td>Settlement retries for up to fifteen minutes, then settles on what the chain knows. A proof that could not be read was not filed.</td></tr>
-        </tbody>
-      </table>
-    </section>
+    <h3 id="c6-3"><em>§6.3</em>When it goes wrong</h3>
+    <table>
+      <thead><tr><th style="width:34%">if</th><th>then</th></tr></thead>
+      <tbody>
+        <tr><td><b>The agent vanishes after taking the job</b></td><td>The deadline passes with no proof and <b>anyone</b> can call <code>expire()</code> to force the failed settlement. It does not require the agent's co-operation.</td></tr>
+        <tr><td><b>The proof post is deleted before the deadline</b></td><td>The id no longer resolves, so it does not count as filed and the bond fails. Proof has to exist at settlement, not merely have existed.</td></tr>
+        <tr><td><b>The proof post is deleted after settlement</b></td><td>Nothing reverses. The ledger row keeps the dead link, marked deleted.</td></tr>
+        <tr><td><b>You change your mind about the terms</b></td><td>Different hash, so a different job. The open bond runs to its own deadline on the original terms.</td></tr>
+        <tr><td><b>The job was impossible</b></td><td>The agent should refuse before bonding. If it bonds anyway it fails and pays — that cost is the mechanism working, not breaking.</td></tr>
+        <tr><td><b>Proof was filed on time and you are unhappy</b></td><td>It settles delivered. You are not made whole. Stated here so nobody is surprised by it later.</td></tr>
+        <tr><td><b>The wallet is empty</b></td><td>The ceiling is zero, so it accepts nothing. It goes quiet rather than working unbonded.</td></tr>
+        <tr><td><b>X is unreachable at the deadline</b></td><td>Settlement retries for up to fifteen minutes, then settles on what the chain knows. A proof that could not be read was not filed.</td></tr>
+      </tbody>
+    </table>
+  </section>
 
-    <!-- §8 -->
-    <section class="cl rv" id="c8">
-      <div class="ch"><span class="no">§8</span><h2>The program</h2></div>
-      <p>Deliberately small. Its job is not to run the agent — it is to hold the commitments that
-        make the agent's behaviour checkable from outside.</p>
-      <table>
-        <thead><tr><th>account</th><th>holds</th></tr></thead>
-        <tbody>
-          <tr><td class="nw"><b>Bond</b></td><td>job_hash, price_cents, bond_cents, deadline_slot, proof_post_id, state</td></tr>
-          <tr><td class="nw"><b>Wallet</b></td><td>balance_cents, lifetime_earned, lifetime_forfeited</td></tr>
-          <tr><td class="nw"><b>Client</b></td><td>handle_hash, jobs_hired, paid_cents, forfeits_received</td></tr>
-          <tr><td class="nw"><b>Mark</b></td><td>delivered, failed, ceiling_cents</td></tr>
-        </tbody>
-      </table>
-      <div class="lab" style="margin-top:22px"><span>Instructions</span><span>one of them public</span></div>
-      <table>
-        <tbody>
-          <tr><td class="nw"><b>initialize</b></td><td>agent</td><td>Creates Wallet and Mark. Once.</td></tr>
-          <tr><td class="nw"><b>open_bond</b></td><td>agent</td><td>Locks hash, price, bond, deadline. Fails if bond &gt; balance.</td></tr>
-          <tr><td class="nw"><b>file_proof</b></td><td>agent</td><td>Attaches proof_post_id. Settles nothing.</td></tr>
-          <tr><td class="nw"><b>settle_delivered</b></td><td>agent</td><td>Bond returns, fee kept.</td></tr>
-          <tr><td class="nw"><b>settle_failed</b></td><td>agent</td><td>Bond and fee to the client.</td></tr>
-          <tr><td class="nw"><b>expire</b></td><td><b>anyone</b></td><td>Past deadline with no valid proof, forces settle_failed.</td></tr>
-        </tbody>
-      </table>
-      <div class="sub"><span class="no">§8.1</span><h3 id="c8-1">State machine</h3></div>
-      <div class="ind">
-        <div class="code">OPEN ──file_proof──▶ OPEN+PROOF ──settle_delivered──▶ DELIVERED
+  <section class="cl col rv" id="c7">
+    <div class="ch"><span class="no">§7</span><h2>The program</h2></div>
+    <p>Deliberately small. Its job is not to run the agent — it is to hold the commitments that make
+      the agent's behaviour checkable from outside.</p>
+    <table>
+      <thead><tr><th>account</th><th>holds</th></tr></thead>
+      <tbody>
+        <tr><td class="nw"><b>Bond</b></td><td>job_hash, price_cents, bond_cents, deadline_slot, proof_post_id, state</td></tr>
+        <tr><td class="nw"><b>Wallet</b></td><td>balance_cents, lifetime_earned, lifetime_forfeited</td></tr>
+        <tr><td class="nw"><b>Client</b></td><td>handle_hash, jobs_hired, paid_cents, forfeits_received</td></tr>
+        <tr><td class="nw"><b>Mark</b></td><td>delivered, failed, ceiling_cents</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="c7-1"><em>§7.1</em>Instructions</h3>
+    <table>
+      <tbody>
+        <tr><td class="nw"><b>initialize</b></td><td>agent</td><td>Creates Wallet and Mark. Once.</td></tr>
+        <tr><td class="nw"><b>open_bond</b></td><td>agent</td><td>Locks hash, price, bond, deadline. Fails if bond &gt; balance.</td></tr>
+        <tr><td class="nw"><b>file_proof</b></td><td>agent</td><td>Attaches proof_post_id. Settles nothing.</td></tr>
+        <tr><td class="nw"><b>settle_delivered</b></td><td>agent</td><td>Bond returns, fee kept.</td></tr>
+        <tr><td class="nw"><b>settle_failed</b></td><td>agent</td><td>Bond and fee to the client.</td></tr>
+        <tr><td class="nw"><b>expire</b></td><td><b>anyone</b></td><td>Past deadline with no valid proof, forces settle_failed.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="c7-2"><em>§7.2</em>State machine</h3>
+    <div class="code">OPEN ──file_proof──▶ OPEN+PROOF ──settle_delivered──▶ DELIVERED
   │                                                bond returns, fee kept
   └── deadline passes ── settle_failed ─────────▶ FAILED
       or anyone calls expire()                    bond + fee to the client
 
-<span class="c">DELIVERED and FAILED are terminal. Nothing returns to OPEN.
-There is no cancel: an opened bond is money at risk until one of the two
-terminal states is reached, which is what stops the agent withdrawing
-from a job it is losing.</span></div>
-        <p>The agent key signs everything except <code>expire</code>. There is <b>no admin key</b>
-          and no upgrade authority after the first month. The human operator in §10 holds no key to
-          this program at all.</p>
-      </div>
-    </section>
+<span class="c">DELIVERED and FAILED are terminal. Nothing returns to OPEN. There is no
+cancel: an opened bond is money at risk until one of the two terminal
+states is reached, which is what stops the agent withdrawing from a job
+it is losing.</span></div>
+    <p>The agent key signs everything except <code>expire</code>. There is <b>no admin key</b> and
+      no upgrade authority after the first month. The human operator in §9.2 holds no key to this
+      program at all.</p>
+  </section>
 
-    <!-- §9 -->
-    <section class="cl rv" id="c9">
-      <div class="ch"><span class="no">§9</span><h2>The readers</h2></div>
-      <p>Jobs are agreed in public threads, so the agent has to read X. Five endpoints, no database,
-        nothing that writes. They work on any public post or handle — not only ones involving this
-        account.</p>
+  <section class="cl col rv" id="c8">
+    <div class="ch"><span class="no">§8</span><h2>The readers</h2></div>
+    <p>Jobs are agreed in public threads, so the agent has to read X. Five endpoints, no database,
+      nothing that writes. They work on any public post or handle — not only ones involving this
+      account.</p>
 
-      <div class="sch" id="schC">
-        <div class="hd"><span><b>Schedule C</b> — read anything</span><span id="C-state">idle</span></div>
-        <div class="bd">
-          <div class="g2">
-            <div>
-              <div class="f"><label for="f-url">post url or id</label>
-                <input type="text" id="f-url" spellcheck="false" placeholder="https://x.com/…/status/…"></div>
-              <button class="btn" id="b-read">read post</button>
-              <div class="out" id="o-read" hidden></div>
-            </div>
-            <div>
-              <div class="f"><label for="f-h">x handle</label>
-                <input type="text" id="f-h" spellcheck="false" placeholder="@cobie"></div>
-              <button class="btn" id="b-handle">read handle</button>
-              <div class="out" id="o-handle" hidden></div>
-            </div>
+    <div class="sch" id="schC">
+      <div class="hd"><span><b>Schedule C</b> — read anything</span><span id="C-state">idle</span></div>
+      <div class="bd">
+        <div class="g2">
+          <div>
+            <div class="f"><label for="f-url">post url or id</label>
+              <input type="text" id="f-url" spellcheck="false" placeholder="https://x.com/…/status/…"></div>
+            <button class="btn" id="b-read">read post</button>
+            <div class="out" id="o-read" hidden></div>
+          </div>
+          <div>
+            <div class="f"><label for="f-h">x handle</label>
+              <input type="text" id="f-h" spellcheck="false" placeholder="@cobie"></div>
+            <button class="btn" id="b-handle">read handle</button>
+            <div class="out" id="o-handle" hidden></div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="sub"><span class="no">§9.1</span><h3 id="c9-1">Are they up right now</h3></div>
-      <div class="ind">
-        <p>Probed from your browser when this page loaded. These are the only live measurements on
-          this page — everything else is either a rule or something you typed.</p>
-        <table>
-          <thead><tr><th>endpoint</th><th>probe</th><th>state</th><th>ms</th></tr></thead>
-          <tbody id="probe">
-            <tr data-p="bond"><td class="nw"><b>/api/bond</b></td><td>hash a known job</td><td class="st">—</td><td class="ms">—</td></tr>
-            <tr data-p="handle"><td class="nw"><b>/api/handle</b></td><td>@elonmusk</td><td class="st">—</td><td class="ms">—</td></tr>
-            <tr data-p="tweet"><td class="nw"><b>/api/tweet</b></td><td>a known post id</td><td class="st">—</td><td class="ms">—</td></tr>
-            <tr data-p="avatar"><td class="nw"><b>/api/avatar</b></td><td>@cobie</td><td class="st">—</td><td class="ms">—</td></tr>
-            <tr data-p="coin"><td class="nw"><b>/api/coin</b></td><td>a live solana mint</td><td class="st">—</td><td class="ms">—</td></tr>
-          </tbody>
-        </table>
-        <p style="margin-top:14px"><button class="btn" id="b-probe">re-run probes</button></p>
-        <p>Only FxTwitter can carry a view count, and not for every post. Either way
-          <code>views</code> returns <code>null</code> and never <code>0</code>. Full parameters and
-          response shapes are in the <a class="lnk" href="docs.html">reference</a>.</p>
-      </div>
-    </section>
+    <h3 id="c8-1"><em>§8.1</em>Are they up right now</h3>
+    <p>Probed from your browser when this page loaded. These are the only live measurements here —
+      everything else is a rule, or something you typed.</p>
+    <table>
+      <thead><tr><th>endpoint</th><th>probe</th><th>state</th><th>ms</th></tr></thead>
+      <tbody id="probe">
+        <tr data-p="bond"><td class="nw"><b>/api/bond</b></td><td>hash a known job</td><td class="st">—</td><td class="ms">—</td></tr>
+        <tr data-p="handle"><td class="nw"><b>/api/handle</b></td><td>@elonmusk</td><td class="st">—</td><td class="ms">—</td></tr>
+        <tr data-p="tweet"><td class="nw"><b>/api/tweet</b></td><td>a known post id</td><td class="st">—</td><td class="ms">—</td></tr>
+        <tr data-p="avatar"><td class="nw"><b>/api/avatar</b></td><td>@cobie</td><td class="st">—</td><td class="ms">—</td></tr>
+        <tr data-p="coin"><td class="nw"><b>/api/coin</b></td><td>a live solana mint</td><td class="st">—</td><td class="ms">—</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:16px"><button class="btn" id="b-probe">re-run probes</button></p>
+    <p>Only FxTwitter can carry a view count, and not for every post. Either way <code>views</code>
+      returns <code>null</code> and never <code>0</code>. Full parameters and response shapes are in
+      the <a class="lnk" href="docs.html">reference</a>.</p>
+  </section>
 
-    <!-- §10 -->
-    <section class="cl rv" id="c10">
-      <div class="ch"><span class="no">§10</span><h2>The operator</h2></div>
-      <p>X Money accounts belong to people. There is no developer API that lets an autonomous agent
-        hold one and push transfers, so a human taps send. That will not be described as automated.</p>
-      <p>What the human does <b>not</b> do is decide anything — the bond, the amount, the recipient
-        and the outcome are fixed onchain before they touch it. Here is what they could do wrong, and
-        where you would catch them.</p>
-      <table>
-        <thead><tr><th style="width:38%">the operator</th><th>because</th></tr></thead>
-        <tbody>
-          <tr><td><b>can refuse to send</b></td><td>then the settlement exists and the payment never follows it. The gap is public and permanent.</td></tr>
-          <tr><td><b>can send without being told</b></td><td>then forfeited-minus-paid stops adding up. The discrepancy is the signal.</td></tr>
-          <tr><td><b>cannot open a bond</b></td><td>no signer. Only the agent key can.</td></tr>
-          <tr><td><b>cannot change an amount</b></td><td>the amount is in the Bond account before any payment exists.</td></tr>
-          <tr><td><b>cannot settle or cancel</b></td><td>terminal states come from the agent's instruction, or from <code>expire()</code> which anyone can call.</td></tr>
-          <tr><td><b>cannot hide a failure</b></td><td>the failed count is on the Mark account and is never decremented.</td></tr>
-        </tbody>
-      </table>
-      <p style="margin-top:16px">Narrowing this role is the main engineering work ahead. It will not
-        be described as gone before it is gone.</p>
-    </section>
+  <section class="cl col rv" id="c9">
+    <div class="ch"><span class="no">§9</span><h2>What is not true yet</h2></div>
+    <p>The rules above describe intended behaviour, not observed behaviour. No bond has ever been
+      opened, so there is nothing on chain to check them against.</p>
+    <table>
+      <tbody>
+        <tr><td class="nw"><b>Mint address</b></td><td>Does not exist.</td></tr>
+        <tr><td class="nw"><b>Program</b></td><td>Specified in §7. Not deployed.</td></tr>
+        <tr><td class="nw"><b>Wallet</b></td><td>None, therefore no balance and a ceiling of zero.</td></tr>
+        <tr><td class="nw"><b>Bonds opened</b></td><td>None. There is no ledger to show, so there is no ledger on this page.</td></tr>
+        <tr><td class="nw"><b>Commitment function</b></td><td>Live — §3, verifiable three ways.</td></tr>
+        <tr><td class="nw"><b>Readers</b></td><td>Live — §8 probes them from your browser.</td></tr>
+      </tbody>
+    </table>
 
-    <!-- §11 -->
-    <section class="cl rv" id="c11">
-      <div class="ch"><span class="no">§11</span><h2>Limitations</h2></div>
-      <p>Every line here is a real limitation, not a feature written backwards from a constraint.</p>
-      <ul class="l">
-        <li>It cannot prove a job was done <em>well</em> — only that proof was filed in time. If you
-          need judgement, this is the wrong instrument.</li>
-        <li>It cannot take a job larger than its own wallet, so early on it can only be hired for
-          small things.</li>
-        <li>It cannot send an X Money payment by itself. See §10.</li>
-        <li>It cannot know whether you are satisfied, and does not ask.</li>
-        <li>It cannot hold a bank account, so its balance sits in a wallet anyone can read.</li>
-        <li>It cannot hide a failure, which is the one limitation that works in your favour.</li>
-      </ul>
-      <div class="sub"><span class="no">§11.1</span><h3 id="c11-1">Not verifiable today</h3></div>
-      <div class="ind">
-        <p>The settlement rules above describe intended behaviour, not observed behaviour, because
-          no bond has ever been opened. There is nothing on chain to check them against.</p>
-        <p>What <b>is</b> checkable right now: the commitment function, three ways, from §3; the
-          readers, which you can call yourself in §9; and this document, which carries a changelog in
-          the <a class="lnk" href="docs.html">reference</a>.</p>
-      </div>
-    </section>
+    <h3 id="c9-1"><em>§9.1</em>What it cannot do</h3>
+    <ul class="l">
+      <li>Prove a job was done <em>well</em> — only that proof was filed in time. If you need
+        judgement, this is the wrong instrument.</li>
+      <li>Take a job larger than its own wallet, so early on it can only be hired for small things.</li>
+      <li>Send an X Money payment by itself. See §9.2.</li>
+      <li>Know whether you are satisfied, and it does not ask.</li>
+      <li>Hold a bank account, so its balance sits in a wallet anyone can read.</li>
+      <li>Hide a failure — the one limitation that works in your favour.</li>
+    </ul>
 
-    <!-- §12 -->
-    <section class="cl rv" id="c12">
-      <div class="ch"><span class="no">§12</span><h2>Status</h2></div>
-      <p>Stated plainly, because a dashboard of dashes is still a dashboard.</p>
-      <table>
-        <tbody>
-          <tr><td class="nw"><b>Mint address</b></td><td>Does not exist.</td></tr>
-          <tr><td class="nw"><b>Program</b></td><td>Specified in §8. Not deployed.</td></tr>
-          <tr><td class="nw"><b>Wallet</b></td><td>No wallet, therefore no balance and a ceiling of zero.</td></tr>
-          <tr><td class="nw"><b>Bonds opened</b></td><td>None. There is no ledger to show yet, so there is no ledger on this page.</td></tr>
-          <tr><td class="nw"><b>Commitment function</b></td><td>Live. §3.</td></tr>
-          <tr><td class="nw"><b>Readers</b></td><td>Live. §9 probes them from your browser.</td></tr>
-        </tbody>
-      </table>
-      <div class="mark">
-        <span class="t">Read this one</span>
-        <p><b>$HIRE has no mint address.</b> When one exists it will appear on this page and in the
-          pinned post at the same moment. Anyone posting an address before that is scamming you —
-          including if they say they are early, including if the account looks right. Nobody will DM
-          you an address, and being paid a forfeited bond requires no action from you, so any message
-          asking you to claim, connect, verify or sign is not from this.</p>
-      </div>
-    </section>
+    <h3 id="c9-2"><em>§9.2</em>The operator</h3>
+    <p>X Money accounts belong to people. No developer API lets an autonomous agent hold one and
+      push transfers, so a human taps send. That will not be described as automated.</p>
+    <p>What the human does <b>not</b> do is decide anything — the bond, the amount, the recipient
+      and the outcome are fixed onchain before they touch it.</p>
+    <table>
+      <thead><tr><th style="width:36%">the operator</th><th>because</th></tr></thead>
+      <tbody>
+        <tr><td><b>can refuse to send</b></td><td>then the settlement exists and the payment never follows it. The gap is public and permanent.</td></tr>
+        <tr><td><b>can send without being told</b></td><td>then forfeited-minus-paid stops adding up. The discrepancy is the signal.</td></tr>
+        <tr><td><b>cannot open a bond</b></td><td>no signer. Only the agent key can.</td></tr>
+        <tr><td><b>cannot change an amount</b></td><td>the amount is in the Bond account before any payment exists.</td></tr>
+        <tr><td><b>cannot settle or cancel</b></td><td>terminal states come from the agent's instruction, or from <code>expire()</code> which anyone can call.</td></tr>
+        <tr><td><b>cannot hide a failure</b></td><td>the failed count is on the Mark account and is never decremented.</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:16px">Narrowing this role is the main engineering work ahead. It will not
+      be described as gone before it is gone.</p>
 
-  </main>
-</div>
+    <h3 id="c9-3"><em>§9.3</em>Before there is an address</h3>
+    <div class="mark">
+      <span class="t">Read this one</span>
+      <p><b>$HIRE has no mint address.</b> When one exists it will appear on this page and in the
+        pinned post at the same moment. Anyone posting an address before that is scamming you —
+        including if they say they are early, including if the account looks right. Nobody will DM
+        you an address, and being paid a forfeited bond requires no action from you, so any message
+        asking you to claim, connect, verify or sign is not from this.</p>
+    </div>
+  </section>
+
+  <div class="end col">
+    <span>HIRE — bond instrument, version 0.1</span>
+    <a href="docs.html">Reference &amp; API &rarr;</a>
+  </div>
+</main>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -656,13 +595,6 @@ const $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 const usd = n => (n == null || !isFinite(n)) ? '—'
   : '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-
-/* ── contents toggle on narrow ─────────────────────────────────────── */
-$('#rb').addEventListener('click', () => {
-  const open = $('#idx').classList.toggle('open');
-  $('#rb').setAttribute('aria-expanded', String(open));
-});
-$$('#idx a').forEach(a => a.addEventListener('click', () => $('#idx').classList.remove('open')));
 
 /* ── the seal, drawn then quantised into characters ────────────────────
    The mark is a bond seal with a break cut through the bottom, because the
@@ -675,7 +607,7 @@ const mulberry = a => () => {
   t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
   return ((t ^ t >>> 14) >>> 0) / 4294967296;
 };
-const CELL_ASPECT = 0.66;   // advance / line-height for the rail's type
+const CELL_ASPECT = 0.66;
 
 function sealGrid(cols, rows){
   const SS = 10;
@@ -687,20 +619,20 @@ function sealGrid(cols, rows){
   x.strokeStyle = '#fff'; x.fillStyle = '#fff';
 
   const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.47;
-  const BRK = 0.28;                        // half-width of the break, radians
-  const bot = Math.PI / 2;                 // canvas 0 = 3 o'clock, positive cw
+  const BRK = 0.28;
+  const bot = Math.PI / 2;
   const a0 = bot + BRK, a1 = bot - BRK + Math.PI * 2;
 
   x.lineWidth = Math.max(1, SS * 0.8);
-  x.beginPath(); x.arc(cx, cy, R, a0, a1); x.stroke();                 // outer
-  x.beginPath(); x.arc(cx, cy, R * 0.68, a0, a1); x.stroke();          // inner
+  x.beginPath(); x.arc(cx, cy, R, a0, a1); x.stroke();
+  x.beginPath(); x.arc(cx, cy, R * 0.68, a0, a1); x.stroke();
 
   const r1 = R * 0.94, r0 = R * 0.78, SLOTS = 26;
   const step = (Math.PI * 2 - BRK * 2) / SLOTS;
   const rnd = mulberry(0x48495245);
   for (let i = 0; i < SLOTS; i++){
     const t = rnd();
-    if (t < 0.16) continue;                                            // a gap
+    if (t < 0.16) continue;
     const s = a0 + i * step, w = step * (0.40 + (t % 0.3));
     x.beginPath();
     x.arc(cx, cy, r1, s, s + w);
@@ -870,7 +802,7 @@ $('#b-tamper').addEventListener('click', () => {
 });
 resetA('enter a job above');
 
-/* ── Schedule B: capacity. Nothing is pre-filled — there is no wallet. ── */
+/* ── Schedule B: capacity. Nothing pre-filled — there is no wallet. ── */
 function capacity(){
   const balRaw = $('#f-bal').value.trim(), askRaw = $('#f-ask').value.trim();
   const bal = Math.max(0, Number(balRaw) || 0), ask = Math.max(0, Number(askRaw) || 0);
@@ -951,7 +883,7 @@ $('#b-handle').addEventListener('click', async () => {
   }
 });
 
-/* ── §9.1 probes: the only live numbers on this page ───────────────── */
+/* ── §8.1 probes: the only live numbers on this page ───────────────── */
 const PROBE_MINT = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263';
 const PROBE_POST = '1519480761749016577';
 
@@ -995,16 +927,27 @@ async function probe(){
 $('#b-probe').addEventListener('click', probe);
 probe();
 
-/* ── index scroll-spy. Only in-page anchors: feeding querySelector a
-   value like 'docs.html' throws and kills every script after it. ────── */
+/* ── the bar: appears once you are past the contents, and names where you
+   are. The observer is fed only real section elements — handing
+   querySelector a value like 'docs.html' throws and takes every later
+   script with it. ──────────────────────────────────────────────────── */
 (function(){
-  const links = $$('#idx a').filter(a => (a.getAttribute('href') || '').startsWith('#'));
-  const map = new Map();
-  links.forEach(a => { const t = document.querySelector(a.getAttribute('href')); if (t) map.set(t, a); });
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting){ links.forEach(l => l.classList.remove('on')); map.get(e.target)?.classList.add('on'); }
-  }), { rootMargin: '-12% 0px -72% 0px' });
-  map.forEach((_, sec) => io.observe(sec));
+  const bar = $('#bar'), here = $('#here'), toc = $('#toc');
+  const secs = $$('.cl[id]');
+  const seen = new Set();
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => e.isIntersecting ? seen.add(e.target) : seen.delete(e.target));
+    if (!seen.size) return;
+    const top = [...seen].sort((a, b) =>
+      a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
+    const n = top.querySelector('.ch .no'), h = top.querySelector('.ch h2');
+    here.innerHTML = `<b>${n ? n.textContent : ''}</b> ${h ? h.textContent : ''}`;
+  }, { rootMargin: '-10% 0px -70% 0px' });
+  secs.forEach(s => io.observe(s));
+
+  const onScroll = () => bar.classList.toggle('show', toc.getBoundingClientRect().bottom < 0);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 })();
 
 /* ── reveals, with a sweep so a contents jump never strands a clause ── */
