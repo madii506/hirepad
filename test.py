@@ -40,6 +40,9 @@ async def main():
             if over:
                 bad.append(f'{label}: content outside the viewport :: {over}')
 
+            if await pg.title() != 'HIRE':
+                bad.append(f'{label}: page title is {await pg.title()!r}, expected \'HIRE\'')
+
             # the seal must have computed itself into characters
             art = await pg.inner_text('#art')
             if 'computing' in art:
