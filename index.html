@@ -43,7 +43,7 @@ pre{margin:0;font-family:var(--mono)}
 #dust{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
 .roll{position:fixed;left:0;right:0;height:42vh;z-index:88;pointer-events:none;
   background:linear-gradient(to bottom,transparent,rgba(255,255,255,.020),transparent);
-  animation:roll 13s linear infinite;will-change:transform}
+  animation:roll 7.5s linear infinite;will-change:transform}
 @keyframes roll{from{transform:translateY(-44vh)} to{transform:translateY(142vh)}}
 
 /* one column, and nothing else holding the page up */
@@ -630,74 +630,97 @@ const usd = n => (n == null || !isFinite(n)) ? '—'
   : '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 
 /* ── the live background ───────────────────────────────────────────────
-   Characters are born at random cells, fade up and back down over a few
-   seconds, and die. Nothing jumps, so it reads as a signal rather than as
-   static. Redrawn at ~8fps, paused when the tab is hidden, and skipped
-   entirely under prefers-reduced-motion.                                  */
+   Two things move. Sparks are short-lived cells that keep re-rolling their
+   character, so the field churns. Runners are short trails falling down a
+   column with a bright head, which is what actually reads as motion. Runs
+   at ~24fps, pauses when the tab is hidden, and is skipped entirely under
+   prefers-reduced-motion.                                                 */
 (function(){
   const cv = document.getElementById('dust');
   if (!cv || !cv.getContext) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const g = cv.getContext('2d');
-  const CHARS = ".'`:;-=+o0#";
-  const CELL = 15, ADV = CELL * 0.62;
-  let cols = 0, rows = 0, cells = [], timer = null, tear = 0;
+  const CH = ".'`:;-=+*o0#%$&";
+  const CELL = 15, ADV = CELL * 0.62, STEP = 42;
+  let cols = 0, rows = 0, sparks = [], runners = [], raf = null, last = 0, tear = 0;
+
+  const pick = () => CH[(Math.random() * CH.length) | 0];
+  const paint = (a, c, x, y) => {
+    if (a < 0.006) return;
+    g.fillStyle = 'rgba(255,255,255,' + a.toFixed(3) + ')';
+    g.fillText(c, x * ADV, y * CELL);
+  };
+
+  function runner(seeded){
+    return {
+      x: (Math.random() * cols) | 0,
+      y: seeded ? Math.random() * rows : -(2 + Math.random() * 12),
+      v: 0.22 + Math.random() * 0.8,          // cells per frame
+      len: 5 + ((Math.random() * 12) | 0),
+      a: 0.09 + Math.random() * 0.2,
+    };
+  }
 
   function size(){
     cv.width = innerWidth; cv.height = innerHeight;
     cols = Math.ceil(innerWidth / ADV) + 1;
     rows = Math.ceil(innerHeight / CELL) + 1;
-    cells = new Array(cols * rows).fill(null);
     g.font = CELL + 'px "IBM Plex Mono", ui-monospace, monospace';
     g.textBaseline = 'top';
+    sparks = [];
+    runners = [];
+    const n = Math.max(4, Math.round(cols / 16));
+    for (let i = 0; i < n; i++) runners.push(runner(true));
   }
 
-  function born(){
-    return {
-      c: CHARS[(Math.random() * CHARS.length) | 0],
-      life: 34 + Math.random() * 120,
-      age: 0,
-      max: 0.045 + Math.random() * 0.15,
-    };
-  }
-
-  function tick(){
+  function frame(t){
+    raf = requestAnimationFrame(frame);
+    if (t - last < STEP) return;
+    last = t;
     g.clearRect(0, 0, cv.width, cv.height);
 
-    const births = Math.max(2, Math.round(cols * rows / 1600));
-    for (let i = 0; i < births; i++){
-      const k = (Math.random() * cells.length) | 0;
-      if (!cells[k]) cells[k] = born();
+    const want = Math.round(cols * rows / 70);
+    while (sparks.length < want){
+      sparks.push({ x: (Math.random() * cols) | 0, y: (Math.random() * rows) | 0,
+                    c: pick(), age: 0, life: 8 + ((Math.random() * 46) | 0),
+                    max: 0.05 + Math.random() * 0.18 });
+    }
+    for (let i = sparks.length - 1; i >= 0; i--){
+      const s = sparks[i];
+      if (++s.age >= s.life){ sparks.splice(i, 1); continue; }
+      if (Math.random() < 0.3) s.c = pick();
+      paint(s.max * Math.sin(Math.PI * (s.age / s.life)), s.c, s.x, s.y);
     }
 
-    // every so often a row tears brighter for a couple of frames
-    if (tear > 0) tear--;
-    else if (Math.random() < 0.012) tear = 2 + ((Math.random() * 3) | 0);
-    const tearRow = tear > 0 ? (Math.random() * rows) | 0 : -1;
+    for (let i = 0; i < runners.length; i++){
+      const r = runners[i];
+      r.y += r.v;
+      if (r.y - r.len > rows){ runners[i] = runner(false); continue; }
+      const head = Math.floor(r.y);
+      for (let k = 0; k < r.len; k++){
+        const yy = head - k;
+        if (yy < 0 || yy > rows) continue;
+        const f = 1 - k / r.len;
+        paint(k === 0 ? Math.min(0.55, r.a * 3) : r.a * f * f, pick(), r.x, yy);
+      }
+    }
 
-    for (let k = 0; k < cells.length; k++){
-      const d = cells[k];
-      if (!d) continue;
-      if (++d.age >= d.life){ cells[k] = null; continue; }
-      const row = (k / cols) | 0;
-      let a = d.max * Math.sin(Math.PI * (d.age / d.life));
-      if (row === tearRow) a = Math.min(0.42, a * 5);
-      if (a < 0.004) continue;
-      g.fillStyle = 'rgba(255,255,255,' + a.toFixed(3) + ')';
-      g.fillText(d.c, (k % cols) * ADV, row * CELL);
+    if (tear > 0){
+      tear--;
+      const row = (Math.random() * rows) | 0;
+      for (let x = 0; x < cols; x += 1 + ((Math.random() * 3) | 0)) paint(0.1, pick(), x, row);
+    } else if (Math.random() < 0.02){
+      tear = 2 + ((Math.random() * 3) | 0);
     }
   }
 
-  const start = () => { if (!timer) timer = setInterval(tick, 120); };
-  const stop = () => { clearInterval(timer); timer = null; };
+  const start = () => { if (raf == null){ last = 0; raf = requestAnimationFrame(frame); } };
+  const stop = () => { if (raf != null){ cancelAnimationFrame(raf); raf = null; } };
 
-  size(); tick(); start();
+  size(); start();
 
   let rt = null;
-  addEventListener('resize', () => {
-    clearTimeout(rt);
-    rt = setTimeout(() => { size(); tick(); }, 180);
-  });
+  addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(size, 180); });
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
 })();
 
