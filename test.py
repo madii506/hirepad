@@ -41,11 +41,13 @@ async def main():
                 bad.append(f'{label}: content outside the viewport :: {over}')
 
             # the seal must have computed itself into characters
-            seal = await pg.inner_text('#seal')
-            if len(seal.strip()) < 120:
-                bad.append(f'{label}: ascii seal did not render ({len(seal.strip())} chars)')
-            if seal.strip() == '[H]':
-                bad.append(f'{label}: ascii seal fell back')
+            art = await pg.inner_text('#art')
+            if 'computing' in art:
+                bad.append(f'{label}: ascii wordmark never rendered')
+            elif art.strip() == 'HIRE':
+                bad.append(f'{label}: ascii wordmark fell back to plain text')
+            elif len(art.strip()) < 200:
+                bad.append(f'{label}: ascii wordmark too small ({len(art.strip())} chars)')
 
             # ── NOTHING IS PRE-FILLED. We are not live. ──────────────────
             for sel in ('#f-job', '#f-price', '#f-deadline', '#f-bal', '#f-ask', '#f-url', '#f-h'):
@@ -76,13 +78,13 @@ async def main():
                 bad.append(f'{label}: scam warning missing')
 
             if label == 'phone':
-                if not await pg.is_visible('#toc ol a'):
-                    bad.append('phone: contents list is not visible')
-                g = await pg.evaluate('''()=>[...document.querySelectorAll('.col')]
+                if not await pg.is_visible('#jump a'):
+                    bad.append('phone: jump strip is not visible')
+                g = await pg.evaluate('''()=>[...document.querySelectorAll('.row > .v, .hero')]
                     .map(e=>e.tagName+'.'+e.className+':'+getComputedStyle(e).paddingLeft)
-                    .filter(s=>!s.endsWith(':18px'))''')
+                    .filter(s=>s.endsWith(':0px'))''')
                 if g:
-                    bad.append(f'phone: .col blocks lost their gutter: {g[:4]}')
+                    bad.append(f'phone: cells lost their padding: {g[:4]}')
                 await pg.screenshot(path='/tmp/hire-phone.png', full_page=True)
                 errs = [e for e in errs if 'favicon' not in e.lower() and 'fonts.g' not in e
                         and 'ERR_' not in e and '404' not in e]
@@ -93,12 +95,11 @@ async def main():
 
             # ── every .col block keeps its gutter. A `padding` shorthand on
             # .top/.toc/.cl silently resets .col's horizontal padding to 0. ──
-            gutters = await pg.evaluate('''()=>[...document.querySelectorAll('.col')]
-                .map(e=>e.tagName+'.'+e.className+':'+getComputedStyle(e).paddingLeft
-                     +'/'+getComputedStyle(e).paddingRight)
-                .filter(s=>!s.endsWith('28px/28px'))''')
+            gutters = await pg.evaluate('''()=>[...document.querySelectorAll('.row > .v, .hero')]
+                .map(e=>e.tagName+'.'+e.className+':'+getComputedStyle(e).paddingLeft)
+                .filter(s=>s.endsWith(':0px'))''')
             if gutters:
-                bad.append(f'.col blocks lost their gutter: {gutters[:4]}')
+                bad.append(f'cells lost their padding: {gutters[:4]}')
 
             # ── black and white only ─────────────────────────────────────
             bg = await pg.evaluate("getComputedStyle(document.body).backgroundColor")
@@ -118,23 +119,29 @@ async def main():
                 bad.append(f'non-greyscale colour found: {tinted}')
 
             # ── clause structure, not the old band template ──────────────
-            nos = await pg.eval_on_selector_all('.cl > .ch > .no', 'e=>e.map(x=>x.textContent.trim())')
-            want = ['§' + str(i) for i in range(1, 10)]
+            nos = await pg.eval_on_selector_all('.row > .k > .n', 'e=>e.map(x=>x.textContent.trim())')
+            want = ['%02d' % i for i in range(1, 10)]
             if nos != want:
-                bad.append(f'clause numbering is {nos}')
-            idx = await pg.eval_on_selector_all('#toc ol a', 'e=>e.length')
+                bad.append(f'row numbering is {nos}')
+            if await pg.evaluate("getComputedStyle(document.querySelector('#jump')).position") != 'sticky':
+                bad.append('the jump strip is not sticky')
+            idx = await pg.eval_on_selector_all('#jump a', 'e=>e.length')
             if idx != 9:
-                bad.append(f'contents lists {idx} clauses, expected 9')
-            # the reading bar is hidden at the top and appears once past contents
-            if await pg.evaluate("document.querySelector('#bar').classList.contains('show')"):
-                bad.append('the reading bar is showing before the contents scroll past')
-            await pg.evaluate("document.querySelector('#c5').scrollIntoView()")
-            await pg.wait_for_timeout(600)
-            if not await pg.evaluate("document.querySelector('#bar').classList.contains('show')"):
-                bad.append('the reading bar never appeared while reading')
-            hereTxt = (await pg.inner_text('#here')).strip()
-            if not hereTxt.startswith('§'):
-                bad.append(f'the reading bar does not name the clause: {hereTxt!r}')
+                bad.append(f'jump strip lists {idx} sections, expected 9')
+            # the jump strip highlights the section you are in, and jumping
+            # must not tuck the heading underneath that strip
+            await pg.evaluate("location.hash=''; document.querySelector('#s5').scrollIntoView()")
+            await pg.wait_for_timeout(700)
+            clipped = await pg.evaluate('''()=>{
+                const strip=document.querySelector('#jump').getBoundingClientRect();
+                const h=document.querySelector('#s5 h2').getBoundingClientRect();
+                return h.top < strip.bottom ? Math.round(strip.bottom-h.top) : 0;
+            }''')
+            if clipped:
+                bad.append(f'jumping hides the heading {clipped}px under the sticky strip')
+            on = await pg.eval_on_selector_all('#jump a.on', 'e=>e.map(x=>x.textContent.trim())')
+            if len(on) != 1:
+                bad.append(f'jump strip highlights {len(on)} entries, expected 1')
             await pg.evaluate('window.scrollTo(0,0)')
             await pg.wait_for_timeout(500)
 
